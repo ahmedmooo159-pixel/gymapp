@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>وحش الجيم | تحليل تقرير الـ InBody الذكي</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .inbody-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+    }
+    .scorecard {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      text-align: center;
+    }
+    .scorecard-val {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #fff;
+    }
+    .scorecard-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .shape-card {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(17, 24, 39, 0.95) 100%);
+      border: 1.5px solid rgba(139, 92, 246, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .history-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <header id="app-header" class="app-header"></header>
+
+  <main class="app-container">
+    
+    <!-- InBody Banner -->
+    <div class="card" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%); border-color: rgba(6, 182, 212, 0.3);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.6rem;">📊</span>
+          <h1 style="font-size: 1.35rem;">تحليل الـ InBody الذكي</h1>
+        </div>
+        <span class="badge badge-cyan">Katch-McArdle</span>
+      </div>
+      <p style="font-size: 0.88rem; color: #cbd5e1;">
+        دخل أرقام ورقة الـ InBody بتاعتك، والسيستم هيحددلك بالظبط شكل جسمك، خطتك المثالية، وسعراتك بدقة متناهية بناءً على كتلة العضلات الصافية.
+      </p>
+    </div>
+
+    <!-- Input Form Card -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>📝</span>
+          <span>إدخال بيانات ورقة الـ InBody</span>
+        </div>
+      </div>
+
+      <form id="inbody-form">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label class="form-label" for="in-weight">الوزن الكلي (كجم) *</label>
+            <input type="number" step="0.1" id="in-weight" class="form-input" placeholder="مثال: 82.5" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="in-fat-pct">نسبة الدهون (PBF %) *</label>
+            <input type="number" step="0.1" id="in-fat-pct" class="form-input" placeholder="مثال: 22.4" min="3" max="70" required>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label class="form-label" for="in-muscle-kg">الكتلة العضلية (SMM كجم)</label>
+            <input type="number" step="0.1" id="in-muscle-kg" class="form-input" placeholder="مثال: 34.2">
+            <span class="form-hint">Skeletal Muscle Mass</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="in-visceral">الدهون الحشوية (مستوى 1-20)</label>
+            <input type="number" id="in-visceral" class="form-input" placeholder="مثال: 7" min="1" max="20">
+            <span class="form-hint">Visceral Fat Level</span>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label class="form-label" for="in-water">ماء الجسم (TBW كجم/لتر)</label>
+            <input type="number" step="0.1" id="in-water" class="form-input" placeholder="مثال: 45.0">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="in-date">تاريخ الفحص</label>
+            <input type="date" id="in-date" class="form-input" required>
+          </div>
+        </div>
+
+        <button type="submit" id="analyze-btn" class="btn btn-primary btn-block mt-2">
+          <span>🔍 تحليل التقرير واستخراج الخطة المخصصة</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Analysis Results Container -->
+    <div id="results-container" class="hidden">
+      
+      <!-- Body Shape & Diagnostic Card -->
+      <div class="shape-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <span style="font-size: 0.82rem; color: #c084fc; font-weight: 700;">تشخيص شكل وتكوين الجسم</span>
+          <span class="badge badge-purple" id="res-shape-badge">...</span>
+        </div>
+        <h2 style="font-size: 1.25rem; color: #fff; margin-bottom: 4px;" id="res-shape-title">...</h2>
+        <p style="font-size: 0.88rem; color: #e2e8f0; line-height: 1.5;" id="res-shape-desc">...</p>
+      </div>
+
+      <!-- Key Breakdown Scorecards -->
+      <div class="card">
+        <h3 style="font-size: 1.05rem; margin-bottom: 12px;">تفاصيل تكوين الجسم بدقة ⚖️</h3>
+        
+        <div class="inbody-grid mb-4">
+          <div class="scorecard">
+            <div class="scorecard-val text-primary" id="res-lean-mass">0</div>
+            <div class="scorecard-label">كتلة خالية من الدهون (LBM كجم)</div>
+          </div>
+          <div class="scorecard">
+            <div class="scorecard-val text-amber" id="res-fat-kg">0</div>
+            <div class="scorecard-label">إجمالي وزن الدهون (كجم)</div>
+          </div>
+          <div class="scorecard">
+            <div class="scorecard-val text-secondary" id="res-bmr-katch">0</div>
+            <div class="scorecard-label">معدل الحرق الحقيقي (BMR)</div>
+          </div>
+        </div>
+
+        <!-- Fat and Visceral Indicators -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.88rem; font-weight: 700;">مستوى نسبة الدهون:</span>
+            <span id="res-fat-status-badge" class="badge">...</span>
+          </div>
+          <div id="res-visceral-wrap" style="background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.88rem; font-weight: 700;">مؤشر الدهون الحشوية:</span>
+            <span id="res-visceral-badge" class="badge">...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actionable Custom Strategy Card -->
+      <div class="card" style="border-color: rgba(16, 185, 129, 0.3);">
+        <div class="card-header">
+          <div class="card-title">
+            <span>🎯</span>
+            <span>الخطة الرياضية والغذائية الموصى بها</span>
+          </div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.25); padding: 14px; border-radius: var(--radius-md); margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;">
+            <span style="font-size: 0.9rem; color: var(--text-muted);">السعرات المستهدفة المحسوبة بدقة:</span>
+            <span style="font-size: 1.5rem; font-weight: 900; color: var(--primary);" id="res-target-cal">0 سعرة</span>
+          </div>
+
+          <div class="macros-grid">
+            <div class="macro-box macro-protein">
+              <div class="macro-val" id="res-prot-val">0</div>
+              <div class="macro-unit">جرام</div>
+              <div class="macro-name">🍗 بروتين موجه</div>
+            </div>
+            <div class="macro-box macro-carbs">
+              <div class="macro-val" id="res-carb-val">0</div>
+              <div class="macro-unit">جرام</div>
+              <div class="macro-name">🍚 كارب</div>
+            </div>
+            <div class="macro-box macro-fat">
+              <div class="macro-val" id="res-fat-val">0</div>
+              <div class="macro-unit">جرام</div>
+              <div class="macro-name">🥑 دهون</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+          <div style="background: var(--bg-surface); padding: 10px 12px; border-radius: var(--radius-sm);">
+            <strong style="color: var(--secondary); font-size: 0.88rem;">🏃‍♂️ توصية الكارديو المخصصة:</strong>
+            <p style="font-size: 0.84rem; color: #cbd5e1; margin-top: 2px;" id="res-cardio-text">...</p>
+          </div>
+          <div style="background: var(--bg-surface); padding: 10px 12px; border-radius: var(--radius-sm);">
+            <strong style="color: var(--primary); font-size: 0.88rem;">💧 الاحتياج اليومي من الماء:</strong>
+            <p style="font-size: 0.84rem; color: #cbd5e1; margin-top: 2px;">
+              اشرب على الأقل <span id="res-water-val" style="font-weight: 800; color: #fff;">0</span> لتر ماء يومياً لتعزيز الاستشفاء والتخلص من احتباس السوائل.
+            </p>
+          </div>
+        </div>
+
+        <button type="button" id="apply-inbody-plan-btn" class="btn btn-primary btn-block" style="padding: 14px;">
+          <span>✓ تطبيق هذه النتائج وتحديث خطتي اليومية فوراً</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- InBody Past History Card -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>📜</span>
+          <span>سجل فحوصات الـ InBody السابقة</span>
+        </div>
+      </div>
+      <div id="inbody-history-list" style="display: flex; flex-direction: column; gap: 8px;">
+        <p class="text-muted text-center" style="padding: 12px 0;">جاري تحميل السجل...</p>
+      </div>
+    </div>
+
+  </main>
+
+  <nav id="bottom-nav" class="bottom-nav"></nav>
+
+  <script type="module">
+    import { requireAuth } from './js/auth.js';
+    import { analyzeInBody, calculateAllTargets } from './js/calc.js';
+    import { saveInBodyReport, getInBodyHistory, saveUserProfile, getLatestInBodyReport } from './js/db.js';
+    import { renderNavigation, showToast, formatDateArabic } from './js/ui.js';
+
+    let userState = null;
+    let currentAnalysis = null;
+
+    requireAuth(async ({ user, profile }) => {
+      userState = { user, profile };
+      renderNavigation('progress', profile);
+
+      // Default date to today
+      document.getElementById('in-date').value = new Date().toISOString().split('T')[0];
+
+      if (profile.weight) document.getElementById('in-weight').value = profile.weight;
+      if (profile.bodyFatPct) document.getElementById('in-fat-pct').value = profile.bodyFatPct;
+      if (profile.muscleMassKg) document.getElementById('in-muscle-kg').value = profile.muscleMassKg;
+      if (profile.visceralFat) document.getElementById('in-visceral').value = profile.visceralFat;
+
+      await loadHistory();
+
+      // Check if user has an existing report to show
+      const latest = await getLatestInBodyReport(user.uid);
+      if (latest) {
+        runAnalysisDisplay(latest);
+      }
+    });
+
+    document.getElementById('inbody-form').onsubmit = (e) => {
+      e.preventDefault();
+      
+      const weight = parseFloat(document.getElementById('in-weight').value);
+      const fatPct = parseFloat(document.getElementById('in-fat-pct').value);
+      const muscleKg = parseFloat(document.getElementById('in-muscle-kg').value) || null;
+      const visceral = parseInt(document.getElementById('in-visceral').value, 10) || null;
+      const water = parseFloat(document.getElementById('in-water').value) || null;
+      const dateStr = document.getElementById('in-date').value;
+
+      if (!weight || !fatPct || !dateStr) {
+        showToast('يرجى ملء الوزن ونسبة الدهون والتاريخ', 'error');
+        return;
+      }
+
+      const inputData = {
+        weight,
+        bodyFatPct: fatPct,
+        muscleMassKg: muscleKg,
+        visceralFat: visceral,
+        waterKg: water,
+        height: userState.profile?.height || 175,
+        age: userState.profile?.age || 25,
+        gender: userState.profile?.gender || 'male',
+        activityLevel: userState.profile?.activityLevel || 'moderate',
+        date: dateStr
+      };
+
+      runAnalysisDisplay(inputData);
+    };
+
+    function runAnalysisDisplay(data) {
+      currentAnalysis = analyzeInBody(data);
+      currentAnalysis.date = data.date || document.getElementById('in-date').value;
+
+      // Fill diagnostic cards
+      document.getElementById('res-shape-title').textContent = currentAnalysis.bodyShape.labelAr;
+      document.getElementById('res-shape-desc').textContent = currentAnalysis.bodyShape.desc;
+      document.getElementById('res-shape-badge').textContent = `شكل ${currentAnalysis.bodyShape.type}`;
+
+      document.getElementById('res-lean-mass').textContent = `${currentAnalysis.leanMassKg} كجم`;
+      document.getElementById('res-fat-kg').textContent = `${currentAnalysis.fatKg} كجم`;
+      document.getElementById('res-bmr-katch').textContent = `${currentAnalysis.preciseBmr} kcal`;
+
+      const fatBadge = document.getElementById('res-fat-status-badge');
+      fatBadge.textContent = `${currentAnalysis.fatPct}% - ${currentAnalysis.fatStatus.labelAr}`;
+      fatBadge.className = `badge badge-${currentAnalysis.fatStatus.color}`;
+
+      const viscWrap = document.getElementById('res-visceral-wrap');
+      if (currentAnalysis.visceralStatus) {
+        viscWrap.classList.remove('hidden');
+        const viscBadge = document.getElementById('res-visceral-badge');
+        viscBadge.textContent = `مستوى ${currentAnalysis.visceralStatus.level} (${currentAnalysis.visceralStatus.labelAr})`;
+        viscBadge.className = `badge badge-${currentAnalysis.visceralStatus.badge}`;
+      } else {
+        viscWrap.classList.add('hidden');
+      }
+
+      document.getElementById('res-target-cal').textContent = `${currentAnalysis.targetCalories?.toLocaleString('ar-EG') || currentAnalysis.targetCalories} سعرة`;
+      document.getElementById('res-prot-val').textContent = currentAnalysis.macros.protein;
+      document.getElementById('res-carb-val').textContent = currentAnalysis.macros.carbs;
+      document.getElementById('res-fat-val').textContent = currentAnalysis.macros.fat;
+
+      document.getElementById('res-cardio-text').textContent = currentAnalysis.cardioAdvice;
+      document.getElementById('res-water-val').textContent = currentAnalysis.waterLiters;
+
+      document.getElementById('results-container').classList.remove('hidden');
+      document.getElementById('results-container').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    document.getElementById('apply-inbody-plan-btn').onclick = async () => {
+      if (!currentAnalysis || !userState) return;
+
+      const applyBtn = document.getElementById('apply-inbody-plan-btn');
+      applyBtn.disabled = true;
+      applyBtn.textContent = 'جاري تطبيق وتحديث الخطة...';
+
+      try {
+        // Save to inbodyHistory
+        await saveInBodyReport(userState.user.uid, currentAnalysis.date, {
+          weight: currentAnalysis.weight,
+          bodyFatPct: currentAnalysis.fatPct,
+          muscleMassKg: currentAnalysis.muscleKg,
+          visceralFat: currentAnalysis.visceralFat,
+          waterKg: currentAnalysis.waterKg,
+          leanMassKg: currentAnalysis.leanMassKg,
+          preciseBmr: currentAnalysis.preciseBmr,
+          targetCalories: currentAnalysis.targetCalories,
+          goal: currentAnalysis.recommendedGoal
+        });
+
+        // Update active profile targets
+        const updatedProfile = {
+          ...userState.profile,
+          weight: currentAnalysis.weight,
+          bodyFatPct: currentAnalysis.fatPct,
+          muscleMassKg: currentAnalysis.muscleKg,
+          visceralFat: currentAnalysis.visceralFat,
+          goal: currentAnalysis.recommendedGoal,
+          bmr: currentAnalysis.preciseBmr,
+          tdee: currentAnalysis.tdee,
+          targetCalories: currentAnalysis.targetCalories,
+          protein: currentAnalysis.macros.protein,
+          fat: currentAnalysis.macros.fat,
+          carbs: currentAnalysis.macros.carbs
+        };
+
+        await saveUserProfile(userState.user.uid, updatedProfile);
+
+        showToast('تم تطبيق خطتك وتحديث السعرات والماكروز بنجاح! 🚀', 'success', 4000);
+        applyBtn.disabled = false;
+        applyBtn.textContent = '✓ تم التطبيق بنجاح';
+
+        await loadHistory();
+
+      } catch (err) {
+        console.error(err);
+        applyBtn.disabled = false;
+        applyBtn.textContent = '✓ تطبيق هذه النتائج وتحديث خطتي اليومية فوراً';
+        showToast('حدث خطأ أثناء حفظ النتائج', 'error');
+      }
+    };
+
+    async function loadHistory() {
+      const history = await getInBodyHistory(userState.user.uid);
+      const listEl = document.getElementById('inbody-history-list');
+
+      if (!history || history.length === 0) {
+        listEl.innerHTML = `<p class="text-muted text-center" style="padding: 12px 0;">لا توجد فحوصات InBody مسجلة سابقة.</p>`;
+        return;
+      }
+
+      listEl.innerHTML = history.slice().reverse().map(h => `
+        <div class="history-card">
+          <div>
+            <div style="font-weight: 800; font-size: 0.95rem; color: #fff;">
+              ${formatDateArabic(h.date)}
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
+              دهون: <strong style="color: var(--accent-amber);">${h.bodyFatPct}%</strong> ${h.muscleMassKg ? `• عضل: <strong style="color: var(--primary);">${h.muscleMassKg} كجم</strong>` : ''}
+            </div>
+          </div>
+          <div style="text-align: left;">
+            <span style="font-weight: 800; font-size: 1.1rem; color: #fff;">${h.weight}</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">كجم</span>
+          </div>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>

@@ -71,9 +71,12 @@
       <div class="card-header">
         <div class="card-title">
           <span>⚖️</span>
-          <span>الوزن الحالي</span>
+          <span>الوزن الحالي والـ InBody</span>
         </div>
-        <a href="progress.html" class="btn-sm btn-outline" style="border-radius: var(--radius-full);">رسم بياني للوزن ←</a>
+        <div style="display: flex; gap: 6px;">
+          <a href="inbody.html" class="btn-sm btn-outline" style="border-radius: var(--radius-full); border-color: var(--secondary); color: var(--secondary);">📊 تحليل InBody</a>
+          <a href="progress.html" class="btn-sm btn-outline" style="border-radius: var(--radius-full);">الرسم البياني ←</a>
+        </div>
       </div>
 
       <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-surface); padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
@@ -87,6 +90,13 @@
         <button id="quick-update-weight-btn" class="btn btn-secondary btn-sm" style="border-color: var(--primary); color: var(--primary);">
           <span>+ تسجيل وزن جديد</span>
         </button>
+      </div>
+
+      <div id="inbody-quick-banner" class="hidden" style="margin-top: 10px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: var(--radius-md); padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.85rem; color: #e2e8f0;">
+          نسبة الدهون: <strong id="dash-fat-pct" style="color: var(--secondary);">0%</strong> • عضل: <strong id="dash-muscle-kg" style="color: var(--primary);">0 كجم</strong>
+        </span>
+        <a href="inbody.html" style="font-size: 0.82rem; font-weight: 700; color: var(--secondary);">تحديث InBody ←</a>
       </div>
     </section>
 
@@ -170,6 +180,13 @@
 
       // Display weight
       document.getElementById('current-weight-val').textContent = profile.weight || 0;
+
+      // Display InBody quick banner if available
+      if (profile.bodyFatPct) {
+        document.getElementById('dash-fat-pct').textContent = `${profile.bodyFatPct}%`;
+        document.getElementById('dash-muscle-kg').textContent = profile.muscleMassKg ? `${profile.muscleMassKg} كجم` : 'غير محدد';
+        document.getElementById('inbody-quick-banner').classList.remove('hidden');
+      }
 
       // Load exercises & today's workout
       allExercises = await loadExercises();

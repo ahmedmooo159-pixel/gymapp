@@ -104,40 +104,14 @@
   <script type="module">
     import { requireAuth } from './js/auth.js';
     import { renderNavigation, showToast } from './js/ui.js';
-    import { app } from './js/firebase-config.js';
+    import { askAICoach } from './js/ai.js';
 
     let userState = null;
     let chatHistory = [];
-    let vertexModel = null;
-
-    // Initialize Firebase Vertex AI / Gen AI safely if available
-    async function initAIModel() {
-      try {
-        const { getVertexAI, getGenerativeModel } = await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-vertexai.js");
-        const vertexAI = getVertexAI(app);
-        vertexModel = getGenerativeModel(vertexAI, {
-          model: "gemini-1.5-flash",
-          systemInstruction: {
-            role: "system",
-            parts: [{
-              text: `أنت كابتن جيم مصري ودود وخبير وصبور جداً مع المبتدئين اسمك "كابتن وحش الجيم".
-إرشاداتك الصارمة:
-1. اتكلم بالمصري البسيط والشعبي الراقي والمشجع (يا بطل، عاش، تمام يا وحش).
-2. اجعل إجاباتك قصيرة ومباشرة ونقاط واضحة وسهلة الفهم للمبتدئ تماماً.
-3. ركز دائماً على الأداء والتكنيك الصحيح والأمان قبل رفع الأوزان الثقيلة.
-4. ممنوع منعاً باتاً إعطاء أي نصيحة طبية أو تشخيص إصابة أو وصف أدوية. إذا ذكر المستخدم ألماً حاداً أو اشتباه إصابة، وجهه بلطف وحزم لاستشارة طبيب عظام أو أخصائي علاج طبيعي فوراً.`
-            }]
-          }
-        });
-      } catch (err) {
-        console.warn("Firebase Vertex AI not active or restricted, fallback smart knowledge coach activated:", err);
-      }
-    }
 
     requireAuth(async ({ user, profile }) => {
       userState = { user, profile };
       renderNavigation('coach', profile);
-      await initAIModel();
     });
 
     const messagesBox = document.getElementById('chat-messages');
@@ -173,24 +147,19 @@
       sendBtn.disabled = true;
 
       try {
-        let reply = '';
-        if (vertexModel) {
-          const result = await vertexModel.generateContent(text);
-          reply = result.response.text();
-        } else {
-          // Smart local fallback coach
-          reply = getFallbackCoachResponse(text, userState?.profile);
-        }
+        const reply = await askAICoach(text, chatHistory, userState?.profile);
+
+        // Update history
+        chatHistory.push({ role: 'user', content: text });
+        chatHistory.push({ role: 'assistant', content: reply });
 
         typingEl.remove();
         appendMessage('coach', reply);
 
       } catch (err) {
-        console.error("AI Error:", err);
+        console.error("AI Chat Error:", err);
         typingEl.remove();
-        // Fallback message with genuine friendly advice
-        const fallbackReply = getFallbackCoachResponse(text, userState?.profile);
-        appendMessage('coach', fallbackReply);
+        appendMessage('coach', "يا بطل حصل ضغط بسيط في السيرفر، بس أنا معاك! ركز على التكنيك الصح والتنفس المنتظم واشرب ماية كويسة 💪");
       } finally {
         sendBtn.disabled = false;
         chatInput.focus();
@@ -215,37 +184,9 @@
     }
 
     function formatReply(text) {
-      // Basic markdown formatting for bullets & bold
       return text
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\n/g, '<br>');
-    }
-
-    // Knowledge base for fallback responses when AI quota/network is offline
-    function getFallbackCoachResponse(query, profile) {
-      const q = query.toLowerCase();
-
-      if (q.includes('ألم') || q.includes('وجع') || q.includes('اصابة') || q.includes('إصابة') || q.includes('مفصل')) {
-        return "سلامتك يا بطل! لو الوجع ده في المفاصل أو حاد ومفاجئ، وقف التمرين فوراً وريح العضلة. وممنوع تتمرن على وجع مفصل، واستشر دكتور أو أخصائي علاج طبيعي للتأكد من سلامتك. صحتك ومفاصلك أهم من أي وزن! 💪";
-      }
-
-      if (q.includes('تنفس') || q.includes('نفس')) {
-        return "قاعدة التنفس الذهبية في الجيم يا بطل بسيطة جداً:\n1. **الزفير (طلع نفسك)**: مع المجهود وأنت بتدفع أو ترفع الوزن لفوق.\n2. **الشهيق (خد نفس)**: وأنت نازل بالوزن بالراحة وبتحكم.\nماتكتمش نفسك أبداً عشان ضغط دمك يفضل مظبوط.";
-      }
-
-      if (q.includes('وزن') || q.includes('أوزان') || q.includes('اوزان')) {
-        return "في أول شهرين، اختار وزن تقدر تلعب بيه من 8 لـ 12 عدة بتكنيك سليم 100% ومن غير مرجحة. آخر عدتين لازم يكونوا صعبين بس بتكنيك مظبوط. لو التكنيك باظ يبقى الوزن تقيل عليك!";
-      }
-
-      if (q.includes('ماية') || q.includes('مياه') || q.includes('عطش')) {
-        return "اشرب رشفات بسيطة من الماية بين المجموعات كل 10-15 دقيقة (حوالي 500 مل خلال التمرين ككل)، واشرب من 3 لـ 4 لتر ماء على مدار اليوم كله عشان تضمن أعلى طاقة واستشفاء عضلات.";
-      }
-
-      if (q.includes('تكسير') || q.includes('عضلاتي') || q.includes('تاني يوم') || q.includes('شد')) {
-        return "ده اسمه (DOMS) أو وجع الاستشفاء العضلي الطبيعي بعد تمرين جديد! علاجه:\n1. اشرب ماية كويسة.\n2. نام 7-8 ساعات بالليل.\n3. خد احتياجك الكامل من البروتين.\n4. مشي خفيف لتنشيط الدورة الدموية.";
-      }
-
-      return "يا بطل، أهم نصيحة ليك كمبتدئ:\n- التزم بجدولك وبتكنيك التمرين الصح.\n- ركز على أكلك والنوم 8 ساعات.\n- الأوزان هتزيد بالتدريج الطبيعي واحدة واحدة. استمر وعاش يا وحش! 💪";
     }
   </script>
 </body>

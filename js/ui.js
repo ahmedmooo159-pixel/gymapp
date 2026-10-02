@@ -68,6 +68,10 @@ export function renderNavigation(activePage, userProfile = null) {
           </div>
         </a>
         <div class="header-actions">
+          <a href="inbody.html" class="coach-badge" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(16, 185, 129, 0.2)); border-color: rgba(6, 182, 212, 0.4);" title="تحليل InBody">
+            <span>📊</span>
+            <span class="coach-label">InBody</span>
+          </a>
           <a href="coach.html" class="coach-badge ${activePage === 'coach' ? 'active' : ''}" title="اسأل الكابتن الذكي">
             <span class="sparkle">✨</span>
             <span class="coach-label">كابتن AI</span>

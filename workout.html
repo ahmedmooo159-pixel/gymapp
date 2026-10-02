@@ -326,12 +326,14 @@
       }
     };
 
+    import { explainExerciseAI } from './js/ai.js';
+
     // Exercise AI Explainer modal
     const modal = document.getElementById('explain-modal');
     const modalTitle = document.getElementById('modal-exercise-title');
     const modalContent = document.getElementById('modal-explain-content');
 
-    function openExplainModal(exercise) {
+    async function openExplainModal(exercise) {
       modalTitle.textContent = `تمرين: ${exercise.nameAr} (${exercise.nameEn})`;
       modalContent.innerHTML = `
         <div style="margin-bottom: 12px;">
@@ -340,17 +342,30 @@
           <strong style="color: var(--secondary);">الأداة المستخدمة:</strong> ${exercise.equipment === 'gym' ? 'جيم وأجهزة' : exercise.equipment === 'dumbbells' ? 'دمبلز' : 'وزن الجسم'}
         </div>
         <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 12px;">
-          <strong>خطوات الأداء الصحيحة:</strong>
+          <strong>خطوات الأداء الأساسية:</strong>
           <p style="margin-top: 6px; color: #f1f5f9;">${exercise.instructionsAr}</p>
         </div>
-        <div style="border-right: 3px solid var(--accent-amber); padding-right: 10px; margin-top: 10px;">
-          <strong style="color: var(--accent-amber);">نصيحة أمان ذهبية من الكابتن:</strong>
-          <p style="font-size: 0.88rem; color: #cbd5e1; margin-top: 4px;">
-            حافظ على استقامة العمود الفقري وتنفسك (زفير مع المجهود وشهيق مع النزول). متقفش مفاصلك للآخر في قمة الحركة.
+        <div id="ai-coach-custom-explanation" style="border-right: 3px solid var(--accent-purple); padding-right: 10px; margin-top: 10px; background: rgba(139, 92, 246, 0.08); padding: 10px; border-radius: 6px;">
+          <strong style="color: #c084fc;">💡 نصيحة كابتن AI للشكل والتنفس:</strong>
+          <p style="font-size: 0.88rem; color: #e2e8f0; margin-top: 4px;" id="ai-coach-text">
+            جاري كتابة نصيحة الكابتن المخصصة... ⏳
           </p>
         </div>
       `;
       modal.classList.remove('hidden');
+
+      try {
+        const aiText = await explainExerciseAI(exercise, userState?.profile);
+        const aiBox = document.getElementById('ai-coach-text');
+        if (aiBox) {
+          aiBox.innerHTML = aiText.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        }
+      } catch (err) {
+        const aiBox = document.getElementById('ai-coach-text');
+        if (aiBox) {
+          aiBox.textContent = "حافظ على استقامة العمود الفقري وتنفسك (زفير مع الدفع وشهيق مع النزول). متقفلش مفاصلك للآخر في قمة الحركة لحماية أوتارك.";
+        }
+      }
     }
 
     document.getElementById('close-explain-modal-btn').onclick = () => modal.classList.add('hidden');

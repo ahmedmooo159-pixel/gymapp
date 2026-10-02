@@ -88,13 +88,191 @@ export function calcMacros(targetCalories, weightKg) {
 }
 
 /**
+ * Calculates Lean Body Mass (LBM) in kg.
+ * @param {number} weightKg
+ * @param {number} bodyFatPct - Body fat percentage (e.g. 20 for 20%)
+ * @returns {number} Lean mass in kg
+ */
+export function calcLeanMass(weightKg, bodyFatPct) {
+  const fatKg = (Number(weightKg) * Number(bodyFatPct)) / 100;
+  return Math.round((Number(weightKg) - fatKg) * 10) / 10;
+}
+
+/**
+ * Calculates BMR using the Katch-McArdle formula (most accurate when body fat / lean mass is known).
+ * BMR = 370 + (21.6 * Lean Body Mass in kg)
+ * @param {number} leanMassKg
+ * @returns {number}
+ */
+export function calcKatchMcArdleBMR(leanMassKg) {
+  return Math.round(370 + 21.6 * Number(leanMassKg));
+}
+
+/**
+ * Comprehensive InBody Analyzer.
+ * Takes inbody readings and produces deep diagnostic results, health indicators, and strategic recommendations.
+ * @param {Object} inbody
+ * @returns {Object} Complete InBody diagnostic report
+ */
+export function analyzeInBody(inbody) {
+  const weight = Number(inbody.weight);
+  const height = Number(inbody.height) || 170;
+  const age = Number(inbody.age) || 25;
+  const gender = inbody.gender || 'male';
+  const fatPct = Number(inbody.bodyFatPct);
+  const muscleKg = Number(inbody.muscleMassKg) || null;
+  const visceralFat = Number(inbody.visceralFat) || null;
+  const waterKg = Number(inbody.waterKg) || null;
+
+  // 1. Calculate Lean Mass & Precise BMR
+  const leanMassKg = calcLeanMass(weight, fatPct);
+  const preciseBmr = calcKatchMcArdleBMR(leanMassKg);
+
+  // 2. Classify Body Fat Percentage
+  let fatStatus = { labelAr: 'طبيعي', color: 'primary', description: 'نسبة الدهون في المعدل الصحي والمثالي.' };
+  let recommendedGoal = 'maintain';
+
+  if (gender === 'male') {
+    if (fatPct < 8) {
+      fatStatus = { labelAr: 'منخفض جداً (نحافة حادة)', color: 'danger', description: 'نسبة دهون منخفضة جداً قد تؤثر على الهرمونات والمناعة.' };
+      recommendedGoal = 'bulk';
+    } else if (fatPct <= 14) {
+      fatStatus = { labelAr: 'رياضي ممتاز (Athletic)', color: 'primary', description: 'جسم رياضي مقسم، عضلات واضحة ودهون منخفضة.' };
+      recommendedGoal = 'bulk';
+    } else if (fatPct <= 19) {
+      fatStatus = { labelAr: 'صحي ومتناسق (Fitness)', color: 'secondary', description: 'معدل دهون صحي ممتاز وبداية تقاسيم الجسم.' };
+      recommendedGoal = 'maintain';
+    } else if (fatPct <= 24) {
+      fatStatus = { labelAr: 'فوق المتوسط (بحاجة لتنشيف خفيف)', color: 'amber', description: 'زيادة بسيطة في الدهون تفضل التركيز على تنشيف معتدل أو ريكومب.' };
+      recommendedGoal = 'cut';
+    } else {
+      fatStatus = { labelAr: 'مرتفع (سمنة / دهون عالية)', color: 'danger', description: 'نسبة دهون مرتفعة تزيد مقاومة الأنسولين ويجب البدء بالتنشيف فوراً.' };
+      recommendedGoal = 'cut';
+    }
+  } else {
+    // Female
+    if (fatPct < 15) {
+      fatStatus = { labelAr: 'منخفض جداً', color: 'danger', description: 'نسبة دهون منخفضة قد تؤثر على انتظام الهرمونات والدورة.' };
+      recommendedGoal = 'bulk';
+    } else if (fatPct <= 22) {
+      fatStatus = { labelAr: 'رياضي ومثالي (Athletic)', color: 'primary', description: 'مستوى دهون مثالي وقوام مشدود ورياضي.' };
+      recommendedGoal = 'maintain';
+    } else if (fatPct <= 28) {
+      fatStatus = { labelAr: 'صحي وطبيعي', color: 'secondary', description: 'نسبة دهون طبيعية وصحية بالكامل.' };
+      recommendedGoal = 'maintain';
+    } else if (fatPct <= 34) {
+      fatStatus = { labelAr: 'فوق المتوسط', color: 'amber', description: 'زيادة في الدهون يفضل معها تنشيف محسوب لشد الجسم.' };
+      recommendedGoal = 'cut';
+    } else {
+      fatStatus = { labelAr: 'مرتفع (سمنة)', color: 'danger', description: 'نسبة دهون مرتفعة تحتاج عجز سعرات وتمارين مقاومة منتظمة.' };
+      recommendedGoal = 'cut';
+    }
+  }
+
+  // 3. Classify Visceral Fat Level (1 to 20 scale)
+  let visceralStatus = null;
+  if (visceralFat) {
+    if (visceralFat <= 8) {
+      visceralStatus = { level: visceralFat, labelAr: 'ممتاز وصحي (1-8)', badge: 'primary', desc: 'الدهون الحشوية حول الكبد والأعضاء في الحدود الآمنة تماماً.' };
+    } else if (visceralFat <= 12) {
+      visceralStatus = { level: visceralFat, labelAr: 'انتباه وتحذير (9-12)', badge: 'amber', desc: 'بداية تراكم دهون حشوية. يفضل تقليل السكريات المكررة والزيوت المهدرجة.' };
+    } else {
+      visceralStatus = { level: visceralFat, labelAr: 'مرتفع وخطر (13+)', badge: 'danger', desc: 'دهون حشوية عالية تزيد خطر مقاومة الأنسولين والكبد الدهني. التنشيف أولوية قصوى.' };
+    }
+  }
+
+  // 4. InBody Shape Classification (C-Shape, I-Shape, D-Shape)
+  let bodyShape = { type: 'I', labelAr: 'قوام متوازن (I-Shape)', desc: 'توازن جيد بين كتلة العضلات والدهون.' };
+  if (fatPct > 20 && muscleKg && muscleKg < (weight * 0.4)) {
+    bodyShape = {
+      type: 'C',
+      labelAr: 'قوام منحنى C (عضل قليل ودهون أعلى)',
+      desc: 'حجم الدهون أكبر من الكتلة العضلية (Skinny Fat أو سمنة). خطتك تحتاج إعادة بناء الجسم (Recomposition): تمرين حديد قوي مع سعرات محسوبة وبروتين عالي.'
+    };
+  } else if (fatPct <= 15 && muscleKg && muscleKg >= (weight * 0.42)) {
+    bodyShape = {
+      type: 'D',
+      labelAr: 'قوام رياضي متقدم (D-Shape)',
+      desc: 'كتلة عضلية بارزة ودهون منخفضة. أنت في فورمة ممتازة وجاهز للتضخيم النظيف الصافي!'
+    };
+  }
+
+  // 5. Total Daily Energy Expenditure (TDEE) based on Katch-McArdle
+  const activityLevel = inbody.activityLevel || 'moderate';
+  const tdee = calcTDEE(preciseBmr, activityLevel);
+  const targetCalories = calcTargetCalories(tdee, recommendedGoal);
+
+  // Protein tailored to Lean Mass (2.2g per kg of lean mass)
+  const proteinGrams = Math.round(leanMassKg * 2.2);
+  const fatGrams = Math.round(weight * 0.85);
+  const remainingKcal = targetCalories - (proteinGrams * 4 + fatGrams * 9);
+  const carbsGrams = Math.max(0, Math.round(remainingKcal / 4));
+
+  // 6. Strategic Cardio Recommendation
+  let cardioAdvice = 'كارديو خفيف 15-20 دقيقة (مشي سريع أو دراجة) مرتين أسبوعياً لصحة القلب.';
+  if (fatPct > 22) {
+    cardioAdvice = 'كارديو منتظم: مشي على مشاية مائلة (Incline Walk) 25-30 دقيقة بعد تمارين الحديد 3-4 مرات أسبوعياً لحرق الدهون دون هدم العضل.';
+  } else if (fatPct < 12) {
+    cardioAdvice = 'كارديو خفيف جداً: 10-15 دقيقة فقط بعد التمرين للحفاظ على اللياقة دون حرق سعرات زائدة تمنع البناء العضلي.';
+  }
+
+  // 7. Daily Water Target (based on weight + muscle water)
+  const waterLiters = (weight * 0.04).toFixed(1);
+
+  return {
+    weight,
+    height,
+    age,
+    gender,
+    fatPct,
+    muscleKg,
+    visceralFat,
+    waterKg,
+    leanMassKg,
+    fatKg: Math.round((weight * fatPct / 100) * 10) / 10,
+    preciseBmr,
+    tdee,
+    targetCalories,
+    recommendedGoal,
+    fatStatus,
+    visceralStatus,
+    bodyShape,
+    macros: {
+      protein: proteinGrams,
+      fat: fatGrams,
+      carbs: carbsGrams
+    },
+    cardioAdvice,
+    waterLiters
+  };
+}
+
+/**
  * Calculates all fitness targets given a complete user profile.
  * @param {Object} profile
  * @returns {Object} Complete calculated metrics
  */
 export function calculateAllTargets(profile) {
-  const { gender, weight, height, age, activityLevel, goal } = profile;
+  const { gender, weight, height, age, activityLevel, goal, bodyFatPct } = profile;
   
+  // If body fat percentage is provided from InBody, use Katch-McArdle
+  if (bodyFatPct && Number(bodyFatPct) > 0) {
+    const leanMass = calcLeanMass(weight, bodyFatPct);
+    const bmr = calcKatchMcArdleBMR(leanMass);
+    const tdee = calcTDEE(bmr, activityLevel);
+    const targetCalories = calcTargetCalories(tdee, goal);
+    const macros = calcMacros(targetCalories, weight);
+    return {
+      bmr,
+      tdee,
+      targetCalories,
+      protein: macros.protein,
+      fat: macros.fat,
+      carbs: macros.carbs,
+      leanMassKg: leanMass
+    };
+  }
+
   const bmr = calcBMR(gender, weight, height, age);
   const tdee = calcTDEE(bmr, activityLevel);
   const targetCalories = calcTargetCalories(tdee, goal);

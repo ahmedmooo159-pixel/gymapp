@@ -210,3 +210,69 @@ export async function getExerciseHistory(uid, exerciseId) {
 
   return history;
 }
+
+/**
+ * Saves InBody test report at users/{uid}/inbodyHistory/{dateStr}
+ * @param {string} uid
+ * @param {string} dateStr
+ * @param {Object} inbodyData
+ * @returns {Promise<void>}
+ */
+export async function saveInBodyReport(uid, dateStr, inbodyData) {
+  if (!uid || !dateStr) throw new Error("UID and dateStr are required");
+  const recordRef = doc(db, "users", uid, "inbodyHistory", dateStr);
+  
+  await setDoc(recordRef, {
+    date: dateStr,
+    ...inbodyData,
+    timestamp: serverTimestamp()
+  }, { merge: true });
+
+  // Update user profile with latest InBody summary
+  const userRef = doc(db, "users", uid);
+  await setDoc(userRef, {
+    weight: Number(inbodyData.weight),
+    bodyFatPct: Number(inbodyData.bodyFatPct),
+    muscleMassKg: Number(inbodyData.muscleMassKg) || null,
+    visceralFat: Number(inbodyData.visceralFat) || null,
+    inbodyLastDate: dateStr,
+    updatedAt: serverTimestamp()
+  }, { merge: true });
+}
+
+/**
+ * Retrieves full InBody history for charts & comparison
+ * @param {string} uid
+ * @returns {Promise<Array>}
+ */
+export async function getInBodyHistory(uid) {
+  if (!uid) return [];
+  const colRef = collection(db, "users", uid, "inbodyHistory");
+  const q = query(colRef, orderBy("date", "asc"));
+  const snap = await getDocs(q);
+  const history = [];
+  snap.forEach(d => {
+    history.push({
+      id: d.id,
+      ...d.data()
+    });
+  });
+  return history;
+}
+
+/**
+ * Retrieves the most recent InBody report
+ * @param {string} uid
+ * @returns {Promise<Object|null>}
+ */
+export async function getLatestInBodyReport(uid) {
+  if (!uid) return null;
+  const colRef = collection(db, "users", uid, "inbodyHistory");
+  const q = query(colRef, orderBy("date", "desc"), limit(1));
+  const snap = await getDocs(q);
+  if (!snap.empty) {
+    const docSnap = snap.docs[0];
+    return { id: docSnap.id, ...docSnap.data() };
+  }
+  return null;
+}
