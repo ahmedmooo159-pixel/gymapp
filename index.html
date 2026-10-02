@@ -75,7 +75,6 @@
 
       try {
         await signInWithGoogle();
-        // redirectIfAuth or auth state listener will navigate
       } catch (err) {
         console.error(err);
         loginBtn.disabled = false;
@@ -85,9 +84,21 @@
           </svg>
           <span>تسجيل الدخول باستخدام Google</span>
         `;
-        errorEl.textContent = 'حدث خطأ أثناء تسجيل الدخول عبر جوجل. يرجى المحاولة مرة أخرى.';
+        
+        let msg = 'حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.';
+        if (err.code === 'auth/configuration-not-found') {
+          msg = '⚠️ خدمة Authentication لم يتم تفعيلها بعد في Firebase Console! يرجى فتح Firebase Console > Authentication > الضغط على Get Started وتفعيل Google.';
+        } else if (err.code === 'auth/unauthorized-domain') {
+          msg = '⚠️ الدومين الحالي غير مضاف في النطاقات المعتمدة (Authorized Domains) في إعدادات Firebase Authentication.';
+        } else if (err.code === 'auth/popup-closed-by-user') {
+          msg = 'تم إغلاق نافذة تسجيل الدخول قبل إتمام العملية.';
+        } else if (err.message) {
+          msg = `خطأ: ${err.message}`;
+        }
+
+        errorEl.innerHTML = `<div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); padding: 12px; border-radius: 8px; color: #fca5a5; line-height: 1.5; font-size: 0.88rem;">${msg}</div>`;
         errorEl.classList.remove('hidden');
-        showToast('تعذر تسجيل الدخول، يرجى المحاولة ثانية', 'error');
+        showToast('فشل تسجيل الدخول، راجع الرسالة للتفاصيل', 'error');
       }
     });
   </script>
