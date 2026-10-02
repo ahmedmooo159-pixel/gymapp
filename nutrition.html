@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>وحش الجيم | دليلك للتغذية والسعرات</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="app-header" class="app-header"></header>
+
+  <main class="app-container">
+    
+    <!-- Nutrition Target Hero -->
+    <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.08) 100%); border-color: rgba(16, 185, 129, 0.3);">
+      <div class="card-header" style="margin-bottom: 8px;">
+        <div>
+          <span style="font-size: 0.82rem; color: var(--primary); font-weight: 700;">خطتك الغذائية اليومية</span>
+          <h1 style="font-size: 1.5rem; margin-top: 2px;">سعراتك والماكروز 🥗</h1>
+        </div>
+        <span class="badge badge-primary" id="nutr-goal-badge">...</span>
+      </div>
+      <p style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 16px;">
+        النتائج في الجيم 70% منها في المطبخ! دي أرقامك المحسوبة بالجرام لوزنك وهدفك.
+      </p>
+
+      <!-- Target Calories Display -->
+      <div style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: var(--radius-md); text-align: center; margin-bottom: 14px;">
+        <span style="font-size: 0.85rem; color: var(--text-muted); display: block;">الهدف اليومي للسعرات</span>
+        <div style="font-size: 2.4rem; font-weight: 900; color: #fff; line-height: 1.2;">
+          <span id="nutr-target-cal">0</span> <span style="font-size: 1rem; color: var(--primary); font-weight: 700;">سعرة</span>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
+          (معدل الحرق الأساسي BMR: <span id="nutr-bmr">0</span> | الحرق الكلي TDEE: <span id="nutr-tdee">0</span>)
+        </div>
+      </div>
+
+      <!-- Macros Grid -->
+      <div class="macros-grid">
+        <div class="macro-box macro-protein">
+          <div class="macro-val" id="nutr-protein">0</div>
+          <div class="macro-unit">جرام</div>
+          <div class="macro-name">🍗 بروتين</div>
+        </div>
+        <div class="macro-box macro-carbs">
+          <div class="macro-val" id="nutr-carbs">0</div>
+          <div class="macro-unit">جرام</div>
+          <div class="macro-name">🍚 كارب</div>
+        </div>
+        <div class="macro-box macro-fat">
+          <div class="macro-val" id="nutr-fat">0</div>
+          <div class="macro-unit">جرام</div>
+          <div class="macro-name">🥑 دهون صحية</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Macro Explanations (Egyptian Arabic) -->
+    <div class="card">
+      <h2 style="font-size: 1.2rem; margin-bottom: 14px;">إيه هي الماكروز وإزاي تختار أكلك؟ 💡</h2>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- Protein -->
+        <div style="background: var(--bg-surface); padding: 14px; border-radius: var(--radius-md); border-right: 4px solid var(--primary);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <h3 style="font-size: 1rem; color: #fff;">🍗 البروتين (2.0 جرام لكل كجم وزن)</h3>
+            <span class="badge badge-primary">بناء العضلات</span>
+          </div>
+          <p style="font-size: 0.88rem; color: #cbd5e1;">
+            حجر الأساس للبناء العضلي واستشفاء الأنسجة بعد التمرين وزيادة الشبع.
+            <br>
+            <strong>أهم مصادره:</strong> صدور الفراخ، التونة، البيض، الجبنة القريش، اللحمة الحمراء، الزبادي اليوناني، والواي بروتين.
+          </p>
+        </div>
+
+        <!-- Carbs -->
+        <div style="background: var(--bg-surface); padding: 14px; border-radius: var(--radius-md); border-right: 4px solid var(--secondary);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <h3 style="font-size: 1rem; color: #fff;">🍚 الكاربوهيدرات (طاقة وبنزين التمرين)</h3>
+            <span class="badge badge-cyan">مصدر الطاقة</span>
+          </div>
+          <p style="font-size: 0.88rem; color: #cbd5e1;">
+            البنزين الأساسي اللي بيديك طاقة تشيل أوزان في الجيم وتملى مخازن الجليكوجين في العضلة.
+            <br>
+            <strong>أهم مصادره:</strong> الشوفان، الرز البسمتي أو المصري، البطاطس والبطاطا، المكرونة، والموز.
+          </p>
+        </div>
+
+        <!-- Fats -->
+        <div style="background: var(--bg-surface); padding: 14px; border-radius: var(--radius-md); border-right: 4px solid var(--accent-amber);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <h3 style="font-size: 1rem; color: #fff;">🥑 الدهون الصحية (0.9 جرام لكل كجم)</h3>
+            <span class="badge badge-amber">صحة الهرمونات</span>
+          </div>
+          <p style="font-size: 0.88rem; color: #cbd5e1;">
+            ضرورية جداً لإفراز هرمون التستوستيرون، امتصاص الفيتامينات، وحماية مفاصلك.
+            <br>
+            <strong>أهم مصادره:</strong> زيت الزيتون، المكسرات (لوز وكاجو وفول سوداني)، زبدة الفول السوداني، وصفار البيض.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meal Timing & Practical Tips -->
+    <div class="card">
+      <h2 style="font-size: 1.2rem; margin-bottom: 12px;">نصائح ذهبية لتنظيم وجباتك ⏰</h2>
+      
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm);">
+          <span style="font-size: 1.3rem;">🍌</span>
+          <div>
+            <strong style="color: #fff; font-size: 0.95rem;">وجبة قبل التمرين (بـ 1.5 إلى 2 ساعة):</strong>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px;">
+              وجبة فيها كارب معقد مع مصدر بروتين سهل الهضم (مثال: شوفان بموز ومعلقة عسل أو رز وفراخ).
+            </p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm);">
+          <span style="font-size: 1.3rem;">🍳</span>
+          <div>
+            <strong style="color: #fff; font-size: 0.95rem;">وجبة بعد التمرين (خلال 1-2 ساعة):</strong>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px;">
+              وجبة غنية بالبروتين والكارب لسرعة استشفاء الألياف العضلية (مثال: بيض مع عيش بلدي وسلطة أو صدور فراخ ورز).
+            </p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm);">
+          <span style="font-size: 1.3rem;">💧</span>
+          <div>
+            <strong style="color: #fff; font-size: 0.95rem;">شرب الماء (3 - 4 لتر يومياً):</strong>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px;">
+              العضلة 70% منها ماء. الجفاف بيقلل قوتك في الجيم بنسبة تفوق 15%!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <nav id="bottom-nav" class="bottom-nav"></nav>
+
+  <script type="module">
+    import { requireAuth } from './js/auth.js';
+    import { renderNavigation } from './js/ui.js';
+
+    requireAuth(({ user, profile }) => {
+      renderNavigation('nutrition', profile);
+
+      const goalBadge = document.getElementById('nutr-goal-badge');
+      if (profile.goal === 'cut') {
+        goalBadge.textContent = '🔥 تنشيف (عجز سعرات)';
+        goalBadge.className = 'badge badge-primary';
+      } else if (profile.goal === 'bulk') {
+        goalBadge.textContent = '💪 تضخيم (فائض سعرات)';
+        goalBadge.className = 'badge badge-amber';
+      } else {
+        goalBadge.textContent = '⚖️ ثبات وزن ولياقة';
+        goalBadge.className = 'badge badge-cyan';
+      }
+
+      document.getElementById('nutr-target-cal').textContent = profile.targetCalories?.toLocaleString('ar-EG') || profile.targetCalories;
+      document.getElementById('nutr-bmr').textContent = profile.bmr || 0;
+      document.getElementById('nutr-tdee').textContent = profile.tdee || 0;
+
+      document.getElementById('nutr-protein').textContent = profile.protein || 0;
+      document.getElementById('nutr-carbs').textContent = profile.carbs || 0;
+      document.getElementById('nutr-fat').textContent = profile.fat || 0;
+    });
+  </script>
+</body>
+</html>

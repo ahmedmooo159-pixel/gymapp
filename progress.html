@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>وحش الجيم | تتبع التقدم والنتائج</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header id="app-header" class="app-header"></header>
+
+  <main class="app-container">
+    
+    <!-- Progress Header -->
+    <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(139, 92, 246, 0.08) 100%); border-color: rgba(16, 185, 129, 0.3);">
+      <div class="card-header" style="margin-bottom: 6px;">
+        <h1 style="font-size: 1.45rem;">سجل التقدم والقوة 📈</h1>
+        <span class="badge badge-primary">تطور مستمر</span>
+      </div>
+      <p style="font-size: 0.88rem; color: #cbd5e1;">
+        الأرقام متكدبش! تابع وزن جسمك وتطور أوزانك في التمارين جلسة ورا جلسة.
+      </p>
+    </div>
+
+    <!-- Weight Progression Chart Card -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>⚖️</span>
+          <span>تطور وزن الجسم (كجم)</span>
+        </div>
+        <button id="add-weight-quick-btn" class="btn-sm btn-outline">+ إضافة قياس</button>
+      </div>
+
+      <div id="weight-chart-wrapper" class="chart-container-card">
+        <canvas id="weightChart"></canvas>
+      </div>
+      <div id="weight-empty-msg" class="text-center text-muted hidden" style="padding: 24px 0;">
+        لا توجد قياسات مسجلة كافية حتى الآن. سجل وزنك بانتظام لتظهر النتائج هنا!
+      </div>
+    </section>
+
+    <!-- Exercise Strength History Section -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>🏋️‍♂️</span>
+          <span>تطور القوة في التمارين</span>
+        </div>
+      </div>
+
+      <div class="form-group mb-4">
+        <label class="form-label" for="exercise-select">اختر التمرين لمشاهدة تطور الوزن:</label>
+        <select id="exercise-select" class="form-select">
+          <option value="">جاري تحميل التمارين...</option>
+        </select>
+      </div>
+
+      <div id="strength-chart-wrapper" class="chart-container-card">
+        <canvas id="strengthChart"></canvas>
+      </div>
+      <div id="strength-empty-msg" class="text-center text-muted hidden" style="padding: 24px 0;">
+        لم تسجل أي جلسات لهذا التمرين بعد. العب وسجل جلساتك في صفحة التمرين!
+      </div>
+    </section>
+
+    <!-- Recent Workout Logs History -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>🏆</span>
+          <span>آخر التمارين المسجلة</span>
+        </div>
+      </div>
+
+      <div id="recent-workouts-list" style="display: flex; flex-direction: column; gap: 8px;">
+        <p class="text-muted text-center" style="padding: 16px 0;">جاري تحميل السجل...</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Weight Update Modal -->
+  <div id="weight-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <h3 style="margin-bottom: 8px;">تسجيل وزن جديد ⚖️</h3>
+      
+      <div class="form-group">
+        <label class="form-label" for="modal-weight-val">الوزن (كجم)</label>
+        <input type="number" id="modal-weight-val" step="0.1" class="form-input" placeholder="مثال: 79.5" min="35" max="250">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="modal-weight-date">تاريخ القياس</label>
+        <input type="date" id="modal-weight-date" class="form-input">
+      </div>
+
+      <div style="display: flex; gap: 10px;" class="mt-4">
+        <button type="button" class="btn btn-secondary" id="modal-cancel-btn">إلغاء</button>
+        <button type="button" class="btn btn-primary" style="flex: 1;" id="modal-save-btn">حفظ</button>
+      </div>
+    </div>
+  </div>
+
+  <nav id="bottom-nav" class="bottom-nav"></nav>
+
+  <script type="module">
+    import { requireAuth } from './js/auth.js';
+    import { loadExercises } from './js/plans.js';
+    import { getWeightHistory, saveWeightRecord, getWorkoutLogs, getExerciseHistory } from './js/db.js';
+    import { renderNavigation, showToast, formatDateArabic } from './js/ui.js';
+
+    let userState = null;
+    let allExercises = [];
+    let weightChartInstance = null;
+    let strengthChartInstance = null;
+
+    requireAuth(async ({ user, profile }) => {
+      userState = { user, profile };
+      renderNavigation('progress', profile);
+
+      allExercises = await loadExercises();
+      
+      // Setup exercise select dropdown
+      populateExerciseSelect();
+
+      // Render weight chart
+      await renderWeightChart();
+
+      // Render recent logs
+      await renderRecentLogs();
+    });
+
+    function populateExerciseSelect() {
+      const select = document.getElementById('exercise-select');
+      select.innerHTML = allExercises.map(ex => `
+        <option value="${ex.id}">${ex.nameAr} (${ex.nameEn})</option>
+      `).join('');
+
+      select.onchange = () => {
+        renderStrengthChart(select.value);
+      };
+
+      if (allExercises.length > 0) {
+        renderStrengthChart(allExercises[0].id);
+      }
+    }
+
+    async function renderWeightChart() {
+      const history = await getWeightHistory(userState.user.uid);
+      const emptyMsg = document.getElementById('weight-empty-msg');
+      const canvasWrapper = document.getElementById('weight-chart-wrapper');
+
+      if (!history || history.length === 0) {
+        emptyMsg.classList.remove('hidden');
+        canvasWrapper.classList.add('hidden');
+        return;
+      }
+
+      emptyMsg.classList.add('hidden');
+      canvasWrapper.classList.remove('hidden');
+
+      const labels = history.map(h => h.date);
+      const dataPoints = history.map(h => h.weight);
+
+      const ctx = document.getElementById('weightChart').getContext('2d');
+
+      if (weightChartInstance) {
+        weightChartInstance.destroy();
+      }
+
+      const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+      gradient.addColorStop(0, 'rgba(16, 185, 129, 0.4)');
+      gradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+      weightChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'الوزن (كجم)',
+            data: dataPoints,
+            borderColor: '#10b981',
+            backgroundColor: gradient,
+            borderWidth: 3,
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: '#10b981',
+            pointBorderColor: '#ffffff',
+            pointRadius: 5,
+            pointHoverRadius: 7
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `الوزن: ${ctx.parsed.y} كجم`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', font: { family: 'Cairo' } }
+            },
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', font: { family: 'Cairo' } }
+            }
+          }
+        }
+      });
+    }
+
+    async function renderStrengthChart(exerciseId) {
+      const history = await getExerciseHistory(userState.user.uid, exerciseId);
+      const emptyMsg = document.getElementById('strength-empty-msg');
+      const canvasWrapper = document.getElementById('strength-chart-wrapper');
+
+      if (!history || history.length === 0) {
+        emptyMsg.classList.remove('hidden');
+        canvasWrapper.classList.add('hidden');
+        if (strengthChartInstance) strengthChartInstance.destroy();
+        return;
+      }
+
+      emptyMsg.classList.add('hidden');
+      canvasWrapper.classList.remove('hidden');
+
+      const labels = history.map(h => h.date);
+      const weights = history.map(h => h.maxWeight);
+
+      const ctx = document.getElementById('strengthChart').getContext('2d');
+
+      if (strengthChartInstance) {
+        strengthChartInstance.destroy();
+      }
+
+      const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+      gradient.addColorStop(0, 'rgba(6, 182, 212, 0.4)');
+      gradient.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+
+      strengthChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'أعلى وزن ملعوب (كجم)',
+            data: weights,
+            borderColor: '#06b6d4',
+            backgroundColor: gradient,
+            borderWidth: 3,
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: '#06b6d4',
+            pointBorderColor: '#ffffff',
+            pointRadius: 5,
+            pointHoverRadius: 7
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `أعلى وزن: ${ctx.parsed.y} كجم`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', font: { family: 'Cairo' } }
+            },
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', font: { family: 'Cairo' } }
+            }
+          }
+        }
+      });
+    }
+
+    async function renderRecentLogs() {
+      const logs = await getWorkoutLogs(userState.user.uid, 10);
+      const listEl = document.getElementById('recent-workouts-list');
+
+      if (!logs || logs.length === 0) {
+        listEl.innerHTML = `
+          <p class="text-muted text-center" style="padding: 16px 0;">
+            لسه مفيش تمارين مسجلة. ابدأ أول تمرين النهاردة وسجله! 💪
+          </p>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = logs.map(log => `
+        <div style="background: var(--bg-surface); padding: 12px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-weight: 800; font-size: 0.95rem; color: #fff;">${log.workoutName || 'جلسة تمرين'}</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">${formatDateArabic(log.date)}</div>
+          </div>
+          <div style="text-align: left;">
+            <span class="badge badge-primary">${log.exercises ? log.exercises.length : 0} تمارين</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Modal quick weight entry
+    const modal = document.getElementById('weight-modal');
+    const modalWeight = document.getElementById('modal-weight-val');
+    const modalDate = document.getElementById('modal-weight-date');
+
+    document.getElementById('add-weight-quick-btn').onclick = () => {
+      modalWeight.value = userState.profile?.weight || '';
+      modalDate.value = new Date().toISOString().split('T')[0];
+      modal.classList.remove('hidden');
+    };
+
+    document.getElementById('modal-cancel-btn').onclick = () => modal.classList.add('hidden');
+
+    document.getElementById('modal-save-btn').onclick = async () => {
+      const w = parseFloat(modalWeight.value);
+      const d = modalDate.value;
+      if (!w || w < 35 || w > 250) {
+        showToast('يرجى كتابة وزن صحيح', 'error');
+        return;
+      }
+      if (!d) {
+        showToast('يرجى اختيار التاريخ', 'error');
+        return;
+      }
+
+      try {
+        await saveWeightRecord(userState.user.uid, d, w);
+        modal.classList.add('hidden');
+        showToast('تم تسجيل قياس الوزن بنجاح!', 'success');
+        await renderWeightChart();
+      } catch (err) {
+        console.error(err);
+        showToast('حدث خطأ أثناء الحفظ', 'error');
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>وحش الجيم | الإعدادات والملف الشخصي</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="app-header" class="app-header"></header>
+
+  <main class="app-container">
+    
+    <!-- Profile Card Header -->
+    <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(17, 24, 39, 0.95) 100%); border-color: rgba(16, 185, 129, 0.25);">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div class="user-avatar" style="width: 54px; height: 54px; font-size: 1.4rem; background: var(--bg-surface); border: 2px solid var(--primary);" id="profile-avatar">
+          👤
+        </div>
+        <div>
+          <h1 style="font-size: 1.25rem;" id="profile-name">اسم المستخدم</h1>
+          <p style="font-size: 0.85rem; color: var(--text-muted);" id="profile-email">email@example.com</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Profile Form Card -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>⚙️</span>
+          <span>تعديل بيانات الخطة الرياضية</span>
+        </div>
+      </div>
+
+      <form id="settings-form">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label class="form-label" for="set-age">السن (سنة)</label>
+            <input type="number" id="set-age" class="form-input" min="14" max="99" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="set-height">الطول (سم)</label>
+            <input type="number" id="set-height" class="form-input" min="120" max="230" required>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label class="form-label" for="set-weight">الوزن (كجم)</label>
+            <input type="number" id="set-weight" step="0.1" class="form-input" min="35" max="250" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="set-gender">النوع</label>
+            <select id="set-gender" class="form-select">
+              <option value="male">شاب / رجل</option>
+              <option value="female">بنت / سيدة</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="set-goal">الهدف الرياضي</label>
+          <select id="set-goal" class="form-select">
+            <option value="cut">🔥 تنشيف وحرق دهون (Cut)</option>
+            <option value="bulk">💪 تضخيم وبناء عضلات (Bulk)</option>
+            <option value="maintain">⚖️ ثبات وزن ولياقة (Maintain)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="set-activity">مستوى النشاط اليومي</label>
+          <select id="set-activity" class="form-select">
+            <option value="sedentary">خامل (عمل مكتبي، قلة حركة)</option>
+            <option value="light">نشاط خفيف (مشي بسيط)</option>
+            <option value="moderate">نشاط متوسط (حركة يومية جيدة)</option>
+            <option value="high">نشاط عالي (مجهود بدني شاق)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="set-days">أيام التمرين في الأسبوع</label>
+          <select id="set-days" class="form-select">
+            <option value="3">3 أيام (فول بودي)</option>
+            <option value="4">4 أيام (جزء علوي / سفلي)</option>
+            <option value="5">5 أيام (Push / Pull / Legs)</option>
+            <option value="6">6 أيام (PPL مكثف)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="set-equipment">الأدوات المتاحة</label>
+          <select id="set-equipment" class="form-select">
+            <option value="gym">🏋️‍♂️ جيم متكامل (أجهزة وبارات)</option>
+            <option value="dumbbells">🥊 دمبلز فقط في البيت</option>
+            <option value="bodyweight">🤸 وزن الجسم فقط بدون أدوات</option>
+          </select>
+        </div>
+
+        <button type="submit" id="save-settings-btn" class="btn btn-primary btn-block mt-4">
+          <span>حفظ التعديلات وإعادة الحساب 💾</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Sign Out Card -->
+    <div class="card" style="border-color: rgba(239, 68, 68, 0.25);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <h3 style="font-size: 1.05rem; color: #fff;">تسجيل الخروج</h3>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">تقدر ترجع تسجل دخول في أي وقت وتلاقي بياناتك محفوظة.</p>
+        </div>
+        <button id="logout-btn" class="btn btn-danger btn-sm">
+          <span>خروج 🚪</span>
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <nav id="bottom-nav" class="bottom-nav"></nav>
+
+  <script type="module">
+    import { requireAuth, logOut } from './js/auth.js';
+    import { calculateAllTargets } from './js/calc.js';
+    import { saveUserProfile, saveWeightRecord } from './js/db.js';
+    import { renderNavigation, showToast } from './js/ui.js';
+
+    let userState = null;
+
+    requireAuth(({ user, profile }) => {
+      userState = { user, profile };
+      renderNavigation('settings', profile);
+
+      document.getElementById('profile-name').textContent = profile.name || user.displayName || 'بطل الجيم';
+      document.getElementById('profile-email').textContent = user.email || '';
+      document.getElementById('profile-avatar').textContent = (profile.name || user.displayName || 'U').charAt(0).toUpperCase();
+
+      // Prefill fields
+      if (profile.age) document.getElementById('set-age').value = profile.age;
+      if (profile.height) document.getElementById('set-height').value = profile.height;
+      if (profile.weight) document.getElementById('set-weight').value = profile.weight;
+      if (profile.gender) document.getElementById('set-gender').value = profile.gender;
+      if (profile.goal) document.getElementById('set-goal').value = profile.goal;
+      if (profile.activityLevel) document.getElementById('set-activity').value = profile.activityLevel;
+      if (profile.trainingDays) document.getElementById('set-days').value = profile.trainingDays;
+      if (profile.equipment) document.getElementById('set-equipment').value = profile.equipment;
+    });
+
+    // Save changes
+    document.getElementById('settings-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const saveBtn = document.getElementById('save-settings-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'جاري حفظ التعديلات...';
+
+      try {
+        const age = parseInt(document.getElementById('set-age').value, 10);
+        const height = parseFloat(document.getElementById('set-height').value);
+        const weight = parseFloat(document.getElementById('set-weight').value);
+        const gender = document.getElementById('set-gender').value;
+        const goal = document.getElementById('set-goal').value;
+        const activityLevel = document.getElementById('set-activity').value;
+        const trainingDays = parseInt(document.getElementById('set-days').value, 10);
+        const equipment = document.getElementById('set-equipment').value;
+
+        const calculated = calculateAllTargets({
+          gender,
+          weight,
+          height,
+          age,
+          activityLevel,
+          goal
+        });
+
+        const updatedProfile = {
+          ...userState.profile,
+          age,
+          height,
+          weight,
+          gender,
+          goal,
+          activityLevel,
+          trainingDays,
+          equipment,
+          ...calculated
+        };
+
+        await saveUserProfile(userState.user.uid, updatedProfile);
+
+        // Also record weight to history
+        const todayStr = new Date().toISOString().split('T')[0];
+        await saveWeightRecord(userState.user.uid, todayStr, weight);
+
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'حفظ التعديلات وإعادة الحساب 💾';
+        showToast('تم حفظ التعديلات وإعادة حساب السعرات والماكروز بنجاح! 🎯', 'success');
+
+      } catch (err) {
+        console.error(err);
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'حفظ التعديلات وإعادة الحساب 💾';
+        showToast('حدث خطأ أثناء الحفظ', 'error');
+      }
+    });
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+        await logOut();
+      }
+    });
+  </script>
+</body>
+</html>

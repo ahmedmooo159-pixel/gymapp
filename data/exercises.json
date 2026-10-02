@@ -1,0 +1,512 @@
+[
+  {
+    "id": "bench_press_barbell",
+    "nameAr": "بنش بار مستوي",
+    "nameEn": "Barbell Bench Press",
+    "muscleGroup": "chest",
+    "equipment": "gym",
+    "instructionsAr": "نام على الدكة المستوية، ثبت رجلك في الأرض، امسك البار بوسع أكبر من كتافك بشوية، انزل بالبار لحد منتصف صدرك بالراحة واطلع مع الزفير بدون ما تفرد كوعك للآخر.",
+    "defaultSets": 3,
+    "defaultReps": "8-10"
+  },
+  {
+    "id": "incline_dumbbell_press",
+    "nameAr": "تجميع دمبل عالي (مائل)",
+    "nameEn": "Incline Dumbbell Press",
+    "muscleGroup": "chest",
+    "equipment": "dumbbells",
+    "instructionsAr": "اضبط الدكة على زاوية 30-45 درجة. ارفع الدمبلز فوق صدرك العلوي، انزل ببطء لحد مستوى صدرك واطلع تاني واعتصر عضلات الصدر.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "dumbbell_bench_press",
+    "nameAr": "تجميع دمبل مستوي",
+    "nameEn": "Flat Dumbbell Press",
+    "muscleGroup": "chest",
+    "equipment": "dumbbells",
+    "instructionsAr": "نام على الدكة، ارفع الدمبلين لفوق مع كتمة نفس خفيفة، انزل براحة لحد زاوية 90 درجة عند الكوع ثم ادفع لفوق مع الزفير.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "pushups",
+    "nameAr": "تمرين الضغط الكلاسيكي",
+    "nameEn": "Push-ups",
+    "muscleGroup": "chest",
+    "equipment": "bodyweight",
+    "instructionsAr": "جسمك خط مستقيم من راسك لكعب رجلك، بطنك مشدودة، انزل بصدرك لحد ما يقرب من الأرض واطلع تاني بقوة.",
+    "defaultSets": 3,
+    "defaultReps": "10-15"
+  },
+  {
+    "id": "incline_pushups",
+    "nameAr": "ضغط مائل للمبتدئين",
+    "nameEn": "Incline Push-ups",
+    "muscleGroup": "chest",
+    "equipment": "bodyweight",
+    "instructionsAr": "حط ايدك على دكة أو حافة عالية شوية، وخلي جسمك مستقيم وانزل بصدرك وادفع نفسك لفوق.",
+    "defaultSets": 3,
+    "defaultReps": "8-12"
+  },
+  {
+    "id": "chest_cable_fly",
+    "nameAr": "تفتيح كابل للصدر",
+    "nameEn": "Cable Chest Fly",
+    "muscleGroup": "chest",
+    "equipment": "gym",
+    "instructionsAr": "اثبت في النص، اثني كوعك تانية بسيطة، واجمع ايدك الاتنين قدام صدرك كأنك بتحضن شجرة كبيرة وثبت ثانية في القمة.",
+    "defaultSets": 3,
+    "defaultReps": "12-15"
+  },
+  {
+    "id": "dumbbell_fly",
+    "nameAr": "تفتيح دمبل مستوي",
+    "nameEn": "Flat Dumbbell Fly",
+    "muscleGroup": "chest",
+    "equipment": "dumbbells",
+    "instructionsAr": "وانت نايم، افتح دراعاتك للجنب مع ثنية كوع ثابتة لحد ما تحس بإطالة الصدر، وارجع اجمعهم لفوق بالراحة.",
+    "defaultSets": 3,
+    "defaultReps": "12-15"
+  },
+  {
+    "id": "chest_press_machine",
+    "nameAr": "جهاز الصدر (ماشين)",
+    "nameEn": "Machine Chest Press",
+    "muscleGroup": "chest",
+    "equipment": "gym",
+    "instructionsAr": "اضبط الكرسي بحيث المقابض تكون في مستوى منتصف الصدر. ادفع للأمام واضغط على صدرك وارجع ببطء وتحكم.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "lat_pulldown",
+    "nameAr": "سحب عالي بالبار (جهاز اللات)",
+    "nameEn": "Lat Pulldown",
+    "muscleGroup": "back",
+    "equipment": "gym",
+    "instructionsAr": "امسك البار بوسع مناسب، ظهرك مفرود بميل خفيف ورا، اسحب البار لتحت لحد أعلى صدرك مع ضم لوحي الكتف وارجع ببطء.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "seated_cable_row",
+    "nameAr": "سحب أرضي بالكابل (كيبل رو)",
+    "nameEn": "Seated Cable Row",
+    "muscleGroup": "back",
+    "equipment": "gym",
+    "instructionsAr": "اقعد ظهرك مستقيم وركبك فيها ثنية خفيفة، اسحب المقبض لأسفل البطن وضم لوحي كتفك ورا مع زفير متحكم.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "one_arm_dumbbell_row",
+    "nameAr": "منشار بالدمبل (وان آرم رو)",
+    "nameEn": "Single-Arm Dumbbell Row",
+    "muscleGroup": "back",
+    "equipment": "dumbbells",
+    "instructionsAr": "سند ركبة وايد على الدكة، ظهرك موازي للأرض، اسحب الدمبل باتجاه جيب البنطلون وخلي كوعك قريب من جنبك.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "bent_over_dumbbell_row",
+    "nameAr": "سحب دمبل مزدوج منحني",
+    "nameEn": "Bent-Over Dumbbell Row",
+    "muscleGroup": "back",
+    "equipment": "dumbbells",
+    "instructionsAr": "اثن ركبتك وميل بظهرك مستقيم 45 درجة، اسحب الدمبلين لورا باتجاه حوضك واعصر ضهرك ثانية كاملة.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "barbell_bent_over_row",
+    "nameAr": "سحب بار منحني للظهر",
+    "nameEn": "Barbell Bent-Over Row",
+    "muscleGroup": "back",
+    "equipment": "gym",
+    "instructionsAr": "امسك البار قبضة مناسبة، ظهرك مفرود تماماً مع انحناء خصر للأمام، اسحب البار نحو السرة مع سحب الأكواع للخلف.",
+    "defaultSets": 3,
+    "defaultReps": "8-10"
+  },
+  {
+    "id": "pullups_or_chinups",
+    "nameAr": "عقلة بوزن الجسم",
+    "nameEn": "Pull-ups / Chin-ups",
+    "muscleGroup": "back",
+    "equipment": "bodyweight",
+    "instructionsAr": "امسك العقلة، علق جسمك وشد كتفك لتحت، اسحب جسمك لحد ما دقنك تعدي البار ثم انزل بتحكم كامل.",
+    "defaultSets": 3,
+    "defaultReps": "6-10"
+  },
+  {
+    "id": "superman_back_extension",
+    "nameAr": "تمرين سوبرمان لأسفل الظهر",
+    "nameEn": "Superman Bodyweight Extension",
+    "muscleGroup": "back",
+    "equipment": "bodyweight",
+    "instructionsAr": "نام على بطنك على سجادة، ارفع ايدك ورجلك الاتنين مع بعض للأعلى بثبات ثانية وانزل بالراحة.",
+    "defaultSets": 3,
+    "defaultReps": "12-15"
+  },
+  {
+    "id": "overhead_dumbbell_shoulder_press",
+    "nameAr": "ضغط أكتاف بالدمبل جالس",
+    "nameEn": "Seated Dumbbell Shoulder Press",
+    "muscleGroup": "shoulders",
+    "equipment": "dumbbells",
+    "instructionsAr": "اقعد على دكة ظهرها قائم، ارفع الدمبلين على مستوى أذنك، ادفع لفوق فوق راسك بدون ما تخبط الدمبلين في بعض.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "barbell_overhead_press",
+    "nameAr": "ضغط أكتاف بالبار (أوفرهيد برس)",
+    "nameEn": "Overhead Barbell Press",
+    "muscleGroup": "shoulders",
+    "equipment": "gym",
+    "instructionsAr": "اقف ثابت ومشدود البطن والأرداف، امسك البار فوق الترقوة، ادفع البار مستقيم للأعلى فوق رأسك.",
+    "defaultSets": 3,
+    "defaultReps": "8-10"
+  },
+  {
+    "id": "dumbbell_lateral_raise",
+    "nameAr": "رفرفة جانبي بالدمبل (أكتاف)",
+    "nameEn": "Dumbbell Lateral Raise",
+    "muscleGroup": "shoulders",
+    "equipment": "dumbbells",
+    "instructionsAr": "اقف مستقيم، ارفع الدمبلين للجانبين لحد مستوى الكتف مع ثنية كوع بسيطة، والنزول ببطء شديد.",
+    "defaultSets": 3,
+    "defaultReps": "12-15"
+  },
+  {
+    "id": "cable_lateral_raise",
+    "nameAr": "رفرفة جانبي بالكابل",
+    "nameEn": "Cable Lateral Raise",
+    "muscleGroup": "shoulders",
+    "equipment": "gym",
+    "instructionsAr": "امسك المقبض بيدك البعيدة عن الجهاز، ارفع للجنب لحد ارتفاع كتفك وانزل بتحكم للحفاظ على الشد المستمر.",
+    "defaultSets": 3,
+    "defaultReps": "12-15"
+  },
+  {
+    "id": "dumbbell_front_raise",
+    "nameAr": "رفرفة أمامي بالدمبل",
+    "nameEn": "Dumbbell Front Raise",
+    "muscleGroup": "shoulders",
+    "equipment": "dumbbells",
+    "instructionsAr": "ارفع دمبل واحد أو الاتنين قدامك مستقيم لمستوى عينك وانزل ببطء مع ثبات الجذع تماماً بدون أرجحة.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "pike_pushups",
+    "nameAr": "ضغط بايك للأكتاف",
+    "nameEn": "Pike Push-ups",
+    "muscleGroup": "shoulders",
+    "equipment": "bodyweight",
+    "instructionsAr": "خد وضعية الضغط وارفع حوضك لفوق كأنك عامل شكل حرف V مقلوب، انزل براسك للأمام وبين ايديك وادفع لفوق.",
+    "defaultSets": 3,
+    "defaultReps": "8-12"
+  },
+  {
+    "id": "face_pull_cable",
+    "nameAr": "فيس بول بالكابل (كتف خلفي)",
+    "nameEn": "Cable Face Pull",
+    "muscleGroup": "shoulders",
+    "equipment": "gym",
+    "instructionsAr": "استخدم الحبل على مستوى الرأس، اسحب الحبل نحو جبهتك مع فتح الأكواع للخارج وتدوير الكتف للخلف.",
+    "defaultSets": 3,
+    "defaultReps": "12-15"
+  },
+  {
+    "id": "rear_delt_dumbbell_fly",
+    "nameAr": "رفرفة خلفي بالدمبل منحني",
+    "nameEn": "Bent-Over Rear Delt Fly",
+    "muscleGroup": "shoulders",
+    "equipment": "dumbbells",
+    "instructionsAr": "انحن للأمام وظهرك مستقيم، ارفع الدمبلز للخارج كأنك أجنحة طائر، وركز على تشغيل الكتف الخلفي.",
+    "defaultSets": 3,
+    "defaultReps": "12-15"
+  },
+  {
+    "id": "barbell_bicep_curl",
+    "nameAr": "تمرين باي بالبار المستقيم",
+    "nameEn": "Barbell / EZ Bicep Curl",
+    "muscleGroup": "biceps",
+    "equipment": "gym",
+    "instructionsAr": "اقف ثابت واكواعك لازقة في جنبك، ارفع البار بعضلة الباي سيبس فقط بدون أرجحة الظهر، وانزل بتحكم كامل.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "dumbbell_bicep_curl",
+    "nameAr": "تبادل باي بالدمبل",
+    "nameEn": "Dumbbell Bicep Curl",
+    "muscleGroup": "biceps",
+    "equipment": "dumbbells",
+    "instructionsAr": "اقف أو اقعد، ارفع الدمبل مع لف المعصم للخارج في القمة لتحفيز الباي سيبس، وانزل براحة.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "hammer_curls",
+    "nameAr": "تمرين هامر (شاكوش) بالدمبل",
+    "nameEn": "Dumbbell Hammer Curls",
+    "muscleGroup": "biceps",
+    "equipment": "dumbbells",
+    "instructionsAr": "امسك الدمبلز بحيث كف ايدك مواجه للتاني كأنك ماسك شاكوش، ارفع وانزل ببطء لتقوية الذراع والساعد.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "bicep_cable_curl",
+    "nameAr": "تبادل باي بالكابل",
+    "nameEn": "Cable Bicep Curl",
+    "muscleGroup": "biceps",
+    "equipment": "gym",
+    "instructionsAr": "اسحب مقبض الكابل من الأسفل مع تثبيت الكوع في مكان واحد تماماً لعزل عضلة الباي سيبس.",
+    "defaultSets": 3,
+    "defaultReps": "12-15"
+  },
+  {
+    "id": "doorframe_bodyweight_curls",
+    "nameAr": "سحب باي بوزن الجسم على الباب",
+    "nameEn": "Bodyweight Incline Row / Curls",
+    "muscleGroup": "biceps",
+    "equipment": "bodyweight",
+    "instructionsAr": "امسك في حلق الباب أو عمود بمستوى الصدر، ميل بجسمك لورا واسحب نفسك بقوة ذراعيك.",
+    "defaultSets": 3,
+    "defaultReps": "12-15"
+  },
+  {
+    "id": "tricep_rope_pushdown",
+    "nameAr": "تراي بالحبل على الكابل (بوش داون)",
+    "nameEn": "Cable Tricep Rope Pushdown",
+    "muscleGroup": "triceps",
+    "equipment": "gym",
+    "instructionsAr": "ثبت كوعك بجانب جسمك، ادفع الحبل لتحت وافرده للجنبين عند النهاية واعصر التراي ثانية كاملة.",
+    "defaultSets": 3,
+    "defaultReps": "12-15"
+  },
+  {
+    "id": "overhead_dumbbell_tricep_extension",
+    "nameAr": "تراي فرنساوي بالدمبل خلف الرأس",
+    "nameEn": "Overhead Dumbbell Tricep Extension",
+    "muscleGroup": "triceps",
+    "equipment": "dumbbells",
+    "instructionsAr": "امسك دمبل باليدين فوق راسك، انزل بيه ورا راسك بثني الكوع واطلع تاني للأعلى مع الحفاظ على كوعك مضموم.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "tricep_kickbacks",
+    "nameAr": "كيك باك للتراي بالدمبل",
+    "nameEn": "Dumbbell Tricep Kickback",
+    "muscleGroup": "triceps",
+    "equipment": "dumbbells",
+    "instructionsAr": "ميل للأمام وخلي كوعك مرفوع بمستوى ضهرك، افرد ذراعك للخلف تماماً واعصر عضلة التراي.",
+    "defaultSets": 3,
+    "defaultReps": "12-15"
+  },
+  {
+    "id": "bench_dips",
+    "nameAr": "غطس تراي على الدكة (بنش ديبس)",
+    "nameEn": "Bench Dips",
+    "muscleGroup": "triceps",
+    "equipment": "bodyweight",
+    "instructionsAr": "حط ايدك على حافة الدكة ورجلك قدامك، انزل بجسمك لحد زاوية 90 درجة عند الكوع وادفع لفوق بعضلة التراي.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "diamond_pushups",
+    "nameAr": "ضغط ماسي للتراي (دايموند بوش اب)",
+    "nameEn": "Diamond Push-ups",
+    "muscleGroup": "triceps",
+    "equipment": "bodyweight",
+    "instructionsAr": "حط ايدك جنب بعض على الأرض بحيث صوابعك تعمل شكل معين/ماسة، انزل بصدرك واطلع للتراي.",
+    "defaultSets": 3,
+    "defaultReps": "8-12"
+  },
+  {
+    "id": "barbell_back_squat",
+    "nameAr": "سكوات خلفي بالبار (رجلين)",
+    "nameEn": "Barbell Back Squat",
+    "muscleGroup": "legs",
+    "equipment": "gym",
+    "instructionsAr": "حط البار على أعلى ضهرك، رجلك بوسع كتفك، انزل بحوضك لورا ولتحت كأنك بتقعد على كرسي لحد ما فخذك يوازي الأرض واطلع.",
+    "defaultSets": 3,
+    "defaultReps": "8-10"
+  },
+  {
+    "id": "goblet_squat",
+    "nameAr": "سكوات جوبلت بالدمبل",
+    "nameEn": "Dumbbell Goblet Squat",
+    "muscleGroup": "legs",
+    "equipment": "dumbbells",
+    "instructionsAr": "امسك دمبل رأسي قدام صدرك بكلتا اليدين، انزل بسكوات عميق مع الحفاظ على صدرك مرفوع وظل ضهرك مستقيم.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "bodyweight_squats",
+    "nameAr": "سكوات حر بوزن الجسم",
+    "nameEn": "Air Squats",
+    "muscleGroup": "legs",
+    "equipment": "bodyweight",
+    "instructionsAr": "اقف مستقيم، مد ايدك للأمام للتوازن، انزل بسكوات لحد زاوية 90 درجة واطلع وافرد حوضك بالكامل.",
+    "defaultSets": 3,
+    "defaultReps": "15-20"
+  },
+  {
+    "id": "leg_press_machine",
+    "nameAr": "جهاز ضغط الأرجل (ليج برس)",
+    "nameEn": "Leg Press Machine",
+    "muscleGroup": "legs",
+    "equipment": "gym",
+    "instructionsAr": "ثبت رجلك على المنصة بوسع كتفك، انزل بالوزن حتى زاوية 90 درجة دون رفع أسفل ظهرك عن المقعد ثم ادفع دون قفل الركبة.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "leg_extension_machine",
+    "nameAr": "جهاز فرد الأرجل (أماميات)",
+    "nameEn": "Leg Extension Machine",
+    "muscleGroup": "legs",
+    "equipment": "gym",
+    "instructionsAr": "اقعد على الجهاز، ارفع الوزن بفرد ساقيك للأعلى واثبت ثانية وانزل ببطء وتحكم شديد.",
+    "defaultSets": 3,
+    "defaultReps": "12-15"
+  },
+  {
+    "id": "dumbbell_lunges",
+    "nameAr": "طعنات بالدمبل (لونجز)",
+    "nameEn": "Dumbbell Walking Lunges",
+    "muscleGroup": "legs",
+    "equipment": "dumbbells",
+    "instructionsAr": "امسك الدمبلز على الجانبين، اخطُ خطوة واسعة للأمام وانزل بركبتك الخلفية قريبة من الأرض ثم ادفع للأمام.",
+    "defaultSets": 3,
+    "defaultReps": "10 لكل رجل"
+  },
+  {
+    "id": "bodyweight_lunges",
+    "nameAr": "طعنات بوزن الجسم",
+    "nameEn": "Bodyweight Lunges",
+    "muscleGroup": "legs",
+    "equipment": "bodyweight",
+    "instructionsAr": "اخطُ للأمام برجل، انزل لحد زاوية 90 في الركبتين وارجع مكانك وبدل مع الرجل التانية.",
+    "defaultSets": 3,
+    "defaultReps": "12 لكل رجل"
+  },
+  {
+    "id": "romanian_deadlift_dumbbells",
+    "nameAr": "ديدلفت روماني بالدمبل (خلفيات وجلوتس)",
+    "nameEn": "Dumbbell Romanian Deadlift (RDL)",
+    "muscleGroup": "glutes",
+    "equipment": "dumbbells",
+    "instructionsAr": "اقف ورجلك بوسع الحوض مع ثنية خفيفة جداً في الركبة، ادفع حوضك لورا ونزل الدمبلز بمحاذاة ساقيك حتى تشعر بشد قوي في الخلفيات.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "barbell_rdl",
+    "nameAr": "ديدلفت روماني بالبار",
+    "nameEn": "Barbell Romanian Deadlift",
+    "muscleGroup": "glutes",
+    "equipment": "gym",
+    "instructionsAr": "امسك البار، ادفع مؤخرتك للخلف وظهرك مستقيم كاللوح، انزل بالبار لأسفل الركبة وارجع للأعلى بعضلات الحوض.",
+    "defaultSets": 3,
+    "defaultReps": "8-10"
+  },
+  {
+    "id": "lying_leg_curl",
+    "nameAr": "جهاز ثني الأرجل نائم (خلفيات)",
+    "nameEn": "Lying Leg Curl Machine",
+    "muscleGroup": "legs",
+    "equipment": "gym",
+    "instructionsAr": "نام على الجهاز، اثنِ رجلك للأعلى باتجاه مؤخرتك، اثبت ثانية وانزل بالراحة لتحقيق تمدد كامل.",
+    "defaultSets": 3,
+    "defaultReps": "12-15"
+  },
+  {
+    "id": "glute_bridge_bodyweight",
+    "nameAr": "جسر الحوض للجلوتس (جلوت بريدج)",
+    "nameEn": "Bodyweight Glute Bridge",
+    "muscleGroup": "glutes",
+    "equipment": "bodyweight",
+    "instructionsAr": "نام على ظهرك وركبك متنية ورجلك على الأرض، ارفع حوضك للأعلى واعصر عضلات الجلوتس ثانية وانزل بالراحة.",
+    "defaultSets": 3,
+    "defaultReps": "15-20"
+  },
+  {
+    "id": "hip_thrust_dumbbell",
+    "nameAr": "هيب ثرست بالدمبل على الدكة",
+    "nameEn": "Dumbbell Hip Thrust",
+    "muscleGroup": "glutes",
+    "equipment": "dumbbells",
+    "instructionsAr": "اسند أعلى ظهرك على الدكة، حط الدمبل فوق عظمة الحوض، انزل بحوضك واطلع بقوة واعصر في القمة.",
+    "defaultSets": 3,
+    "defaultReps": "10-12"
+  },
+  {
+    "id": "standing_calf_raise",
+    "nameAr": "رفع السمانة واقفاً (سمانة)",
+    "nameEn": "Standing Calf Raise",
+    "muscleGroup": "legs",
+    "equipment": "bodyweight",
+    "instructionsAr": "اقف على مشط رجلك على حافة عتبة، انزل بكعبك لتحت لأقصى إطالة ثم ارفع جسمك على أطراف أصابعك لأعلى نقطة.",
+    "defaultSets": 3,
+    "defaultReps": "15-20"
+  },
+  {
+    "id": "plank",
+    "nameAr": "تمرين البلانك للبطن والكور",
+    "nameEn": "Plank",
+    "muscleGroup": "core",
+    "equipment": "bodyweight",
+    "instructionsAr": "استند على ساعديك وأطراف أصابع قدميك، شد بطنك وجسمك مفرود زي المسطرة، اتنفس بانتظام واثبت.",
+    "defaultSets": 3,
+    "defaultReps": "30-45 ثانية"
+  },
+  {
+    "id": "crunches",
+    "nameAr": "تمرين طحن البطن (كرنشز)",
+    "nameEn": "Abdominal Crunches",
+    "muscleGroup": "core",
+    "equipment": "bodyweight",
+    "instructionsAr": "نام على ظهرك واثنِ ركبتيك، ارفع لوحي كتفك فقط عن الأرض مع زفير وضغط على عضلات البطن العلوية ثم انزل بهدوء.",
+    "defaultSets": 3,
+    "defaultReps": "15-20"
+  },
+  {
+    "id": "hanging_leg_raise",
+    "nameAr": "رفع الأرجل على العقلة (بطن سفلية)",
+    "nameEn": "Hanging Leg / Knee Raise",
+    "muscleGroup": "core",
+    "equipment": "gym",
+    "instructionsAr": "تعلق على البار، ارفع ركبتيك باتجاه صدرك مع شد البطن السفلية وتجنب أرجحة الجسم.",
+    "defaultSets": 3,
+    "defaultReps": "10-15"
+  },
+  {
+    "id": "lying_leg_raise",
+    "nameAr": "رفع الأرجل نائم للبطن السفلية",
+    "nameEn": "Lying Leg Raise",
+    "muscleGroup": "core",
+    "equipment": "bodyweight",
+    "instructionsAr": "نام على ظهرك وحط ايدك تحت حوضك، ارفع رجليك الاتنين مع بعض لحد زاوية 90 درجة وانزل ببطء قبل ما تلمس الأرض.",
+    "defaultSets": 3,
+    "defaultReps": "12-15"
+  },
+  {
+    "id": "russian_twists",
+    "nameAr": "تويست روسي لخواصر البطن",
+    "nameEn": "Russian Twists",
+    "muscleGroup": "core",
+    "equipment": "bodyweight",
+    "instructionsAr": "اقعد وميل بضهرك 45 درجة، ارفع رجلك خفيف ولف بجذعك من اليمين للشمال بالراحة مع التركيز على الخواصر.",
+    "defaultSets": 3,
+    "defaultReps": "16 (8 لكل جنب)"
+  }
+]

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>وحش الجيم | لوحة التحكم</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Top Header Container -->
+  <header id="app-header" class="app-header"></header>
+
+  <main class="app-container">
+    
+    <!-- User Welcome Greeting Banner -->
+    <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.08) 100%); border-color: rgba(16, 185, 129, 0.25);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <span style="font-size: 0.85rem; color: var(--primary); font-weight: 700;" id="current-date-text">...</span>
+          <h1 style="font-size: 1.45rem; margin-top: 2px;" id="greeting-title">أهلاً يا بطل! 💪</h1>
+        </div>
+        <div id="goal-badge-wrap">
+          <span class="badge badge-primary" id="user-goal-badge">...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Today's Workout Section -->
+    <section id="today-workout-container">
+      <div class="card" style="text-align: center; padding: 30px;">
+        <p>جاري تحميل تمرين اليوم...</p>
+      </div>
+    </section>
+
+    <!-- Daily Nutrition & Calories Card -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>🥗</span>
+          <span>احتياجك اليومي من السعرات</span>
+        </div>
+        <a href="nutrition.html" class="btn-sm btn-outline" style="border-radius: var(--radius-full);">تفاصيل الماكروز ←</a>
+      </div>
+
+      <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 14px;">
+        <span style="font-size: 2.2rem; font-weight: 900; color: #fff;" id="target-calories-val">0</span>
+        <span style="color: var(--text-muted); font-size: 0.95rem; font-weight: 700;">سعرة حرارية / يوم</span>
+      </div>
+
+      <div class="macros-grid">
+        <div class="macro-box macro-protein">
+          <div class="macro-val" id="macro-protein-val">0</div>
+          <div class="macro-unit">جرام</div>
+          <div class="macro-name">🍗 بروتين</div>
+        </div>
+        <div class="macro-box macro-carbs">
+          <div class="macro-val" id="macro-carbs-val">0</div>
+          <div class="macro-unit">جرام</div>
+          <div class="macro-name">🍚 كاربوهيدرات</div>
+        </div>
+        <div class="macro-box macro-fat">
+          <div class="macro-val" id="macro-fat-val">0</div>
+          <div class="macro-unit">جرام</div>
+          <div class="macro-name">🥑 دهون صحية</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Weight Tracker Card -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>⚖️</span>
+          <span>الوزن الحالي</span>
+        </div>
+        <a href="progress.html" class="btn-sm btn-outline" style="border-radius: var(--radius-full);">رسم بياني للوزن ←</a>
+      </div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-surface); padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+        <div>
+          <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">آخر وزن مسجل</span>
+          <div style="display: flex; align-items: baseline; gap: 6px;">
+            <span style="font-size: 1.8rem; font-weight: 900; color: #fff;" id="current-weight-val">0</span>
+            <span style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 700;">كجم</span>
+          </div>
+        </div>
+        <button id="quick-update-weight-btn" class="btn btn-secondary btn-sm" style="border-color: var(--primary); color: var(--primary);">
+          <span>+ تسجيل وزن جديد</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Quick AI Coach Tip Banner -->
+    <section class="card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(17, 24, 39, 0.9) 100%); border-color: rgba(139, 92, 246, 0.3);">
+      <div style="display: flex; gap: 12px; align-items: flex-start;">
+        <div style="font-size: 1.8rem; line-height: 1;">💡</div>
+        <div style="flex: 1;">
+          <h3 style="font-size: 1rem; color: #c084fc; margin-bottom: 4px;">نصيحة الكابتن للمبتدئ</h3>
+          <p style="font-size: 0.88rem; color: #e2e8f0; line-height: 1.5;" id="daily-coach-tip">
+            "ركز في أول شهرين على التكنيك الصح والمدى الحركي الكامل قبل ما تفكر تزود أوزان. العضلة بتكبر بالتركيز مش بالمرجحة!"
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Weight Update Modal -->
+  <div id="weight-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <h3 style="margin-bottom: 8px;">تسجيل وزن جديد ⚖️</h3>
+      <p style="font-size: 0.88rem; margin-bottom: 16px;">وزنك الصبح على معدة فاضية هو الأدق دائماً.</p>
+      
+      <div class="form-group">
+        <label class="form-label" for="new-weight-input">الوزن الحالي (كجم)</label>
+        <input type="number" id="new-weight-input" step="0.1" class="form-input" placeholder="مثال: 79.2" min="35" max="250">
+      </div>
+
+      <div style="display: flex; gap: 10px;" class="mt-4">
+        <button type="button" class="btn btn-secondary" id="cancel-weight-modal-btn">إلغاء</button>
+        <button type="button" class="btn btn-primary" style="flex: 1;" id="save-weight-modal-btn">حفظ الوزن</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Container -->
+  <nav id="bottom-nav" class="bottom-nav"></nav>
+
+  <script type="module">
+    import { requireAuth } from './js/auth.js';
+    import { loadExercises, getTodaysWorkout } from './js/plans.js';
+    import { saveWeightRecord, getWorkoutLogByDate } from './js/db.js';
+    import { calculateAllTargets } from './js/calc.js';
+    import { renderNavigation, showToast, formatDateArabic } from './js/ui.js';
+
+    let userState = null;
+    let allExercises = [];
+
+    requireAuth(async ({ user, profile }) => {
+      userState = { user, profile };
+      
+      // Render Navigation
+      renderNavigation('dashboard', profile);
+
+      // Display Date
+      document.getElementById('current-date-text').textContent = formatDateArabic(new Date());
+
+      // Welcome title
+      const firstName = profile.name ? profile.name.split(' ')[0] : 'يا بطل';
+      document.getElementById('greeting-title').textContent = `أهلاً، ${firstName} 💪`;
+
+      // Goal badge
+      const goalBadge = document.getElementById('user-goal-badge');
+      if (profile.goal === 'cut') {
+        goalBadge.textContent = '🔥 تنشيف وحرق دهون';
+        goalBadge.className = 'badge badge-primary';
+      } else if (profile.goal === 'bulk') {
+        goalBadge.textContent = '💪 تضخيم وبناء عضلات';
+        goalBadge.className = 'badge badge-amber';
+      } else {
+        goalBadge.textContent = '⚖️ ثبات وزن ولياقة';
+        goalBadge.className = 'badge badge-cyan';
+      }
+
+      // Display calories & macros
+      document.getElementById('target-calories-val').textContent = profile.targetCalories?.toLocaleString('ar-EG') || profile.targetCalories || 0;
+      document.getElementById('macro-protein-val').textContent = profile.protein || 0;
+      document.getElementById('macro-carbs-val').textContent = profile.carbs || 0;
+      document.getElementById('macro-fat-val').textContent = profile.fat || 0;
+
+      // Display weight
+      document.getElementById('current-weight-val').textContent = profile.weight || 0;
+
+      // Load exercises & today's workout
+      allExercises = await loadExercises();
+      await renderTodayWorkout(profile);
+    });
+
+    async function renderTodayWorkout(profile) {
+      const container = document.getElementById('today-workout-container');
+      const todayData = getTodaysWorkout(profile, allExercises);
+      const todayDateStr = new Date().toISOString().split('T')[0];
+      
+      // Check if user already completed today's workout
+      const existingLog = await getWorkoutLogByDate(userState.user.uid, todayDateStr);
+
+      if (todayData.isRestDay) {
+        container.innerHTML = `
+          <div class="card" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.12) 0%, rgba(17, 24, 39, 0.95) 100%); border-color: rgba(6, 182, 212, 0.3);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.6rem;">🧘‍♂️</span>
+                <h2 style="font-size: 1.25rem;">اليوم: راحة واستشفاء</h2>
+              </div>
+              <span class="badge badge-cyan">${todayData.dayInfo.nameAr}</span>
+            </div>
+            <p style="font-size: 0.92rem; color: #cbd5e1; margin-bottom: 16px;">
+              العضلات بتكبر في وقت الراحة مش في الجيم! اشرب ماية كويسة، نام 7-8 ساعات، وركز على أكلك.
+            </p>
+            <div style="display: flex; gap: 10px;">
+              <a href="schedule.html" class="btn btn-secondary btn-block">عرض جدول الأسبوع 📅</a>
+              <a href="workout.html?mode=optional" class="btn btn-outline btn-block" style="font-size: 0.9rem;">تمرين إضافي 💪</a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const workout = todayData.workout;
+      const completedBadge = existingLog ? `<span class="badge badge-primary">تم إنجازه بنجاح ✓</span>` : `<span class="badge badge-amber">${todayData.dayInfo.nameAr}</span>`;
+
+      container.innerHTML = `
+        <div class="card workout-hero-card">
+          <div class="card-header" style="margin-bottom: 8px;">
+            <div>
+              <span style="font-size: 0.8rem; color: var(--primary); font-weight: 700; text-transform: uppercase;">تمرين اليوم</span>
+              <h2 style="font-size: 1.35rem; margin-top: 2px;">${workout.nameAr}</h2>
+            </div>
+            ${completedBadge}
+          </div>
+
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 12px;">
+            ${workout.descriptionAr}
+          </p>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;">
+            ${workout.targetMuscles.map(m => `<span class="badge badge-muted">${m}</span>`).join('')}
+          </div>
+
+          <div class="exercise-preview-list">
+            ${workout.exercises.map((ex, idx) => `
+              <div class="exercise-preview-item">
+                <span style="font-weight: 700;">${idx + 1}. ${ex.nameAr}</span>
+                <span style="color: var(--text-muted); font-size: 0.8rem; direction: ltr;">${ex.defaultSets} × ${ex.defaultReps}</span>
+              </div>
+            `).join('')}
+          </div>
+
+          <a href="workout.html" class="btn btn-primary btn-block mt-2" style="padding: 14px; font-size: 1.05rem;">
+            <span>${existingLog ? 'عرض أو تعديل تمرين اليوم 💪' : 'ابدأ التمرين الآن 🚀'}</span>
+          </a>
+        </div>
+      `;
+    }
+
+    // Weight modal handlers
+    const weightModal = document.getElementById('weight-modal');
+    const weightInput = document.getElementById('new-weight-input');
+    
+    document.getElementById('quick-update-weight-btn').onclick = () => {
+      weightInput.value = userState.profile?.weight || '';
+      weightModal.classList.remove('hidden');
+    };
+
+    document.getElementById('cancel-weight-modal-btn').onclick = () => {
+      weightModal.classList.add('hidden');
+    };
+
+    document.getElementById('save-weight-modal-btn').onclick = async () => {
+      const val = parseFloat(weightInput.value);
+      if (!val || val < 35 || val > 250) {
+        showToast('يرجى إدخال وزن صحيح بالكيلوجرام', 'error');
+        return;
+      }
+
+      try {
+        const todayStr = new Date().toISOString().split('T')[0];
+        await saveWeightRecord(userState.user.uid, todayStr, val);
+        
+        userState.profile.weight = val;
+        // Recalculate macros for new weight
+        const updatedTargets = calculateAllTargets(userState.profile);
+        Object.assign(userState.profile, updatedTargets);
+
+        document.getElementById('current-weight-val').textContent = val;
+        document.getElementById('macro-protein-val').textContent = updatedTargets.protein;
+        document.getElementById('macro-carbs-val').textContent = updatedTargets.carbs;
+        document.getElementById('macro-fat-val').textContent = updatedTargets.fat;
+        document.getElementById('target-calories-val').textContent = updatedTargets.targetCalories?.toLocaleString('ar-EG') || updatedTargets.targetCalories;
+
+        weightModal.classList.add('hidden');
+        showToast('تم تحديث وزنك واحتياج الماكروز بنجاح! 🎯', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('حدث خطأ أثناء حفظ الوزن', 'error');
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>وحش الجيم | جلسة التمرين</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="app-header" class="app-header"></header>
+
+  <main class="app-container">
+    
+    <!-- Workout Session Header -->
+    <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(17, 24, 39, 0.95) 100%); border-color: rgba(16, 185, 129, 0.3);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+        <span class="badge badge-primary" id="workout-day-badge">تمرين اليوم</span>
+        <span style="font-size: 0.85rem; color: var(--text-muted);" id="session-date-display">...</span>
+      </div>
+      <h1 style="font-size: 1.45rem; margin-bottom: 6px;" id="workout-session-name">جاري تجهيز التمرين...</h1>
+      <p style="font-size: 0.88rem; color: #cbd5e1;" id="workout-session-desc">سجل أوزانك وعداتك في كل مجموعة عشان تتابع تقدمك وتطور قوتك 💪</p>
+    </div>
+
+    <!-- Exercise List Container -->
+    <div id="exercises-container" style="display: flex; flex-direction: column; gap: 16px;">
+      <div class="card text-center" style="padding: 40px;">
+        <p>جاري تجهيز التمارين والبيانات السابقة...</p>
+      </div>
+    </div>
+
+    <!-- Finish Workout Button -->
+    <div class="card" style="padding: 16px; margin-top: 10px;">
+      <button id="finish-workout-btn" class="btn btn-primary btn-block" style="padding: 16px; font-size: 1.1rem;">
+        <span>إنهاء وحفظ التمرين بالكامل ✓</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Exercise AI Explanation Modal -->
+  <div id="explain-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px;">
+        <div>
+          <span style="font-size: 0.8rem; color: var(--accent-purple); font-weight: 700;">شرح كابتن AI ✨</span>
+          <h3 id="modal-exercise-title" style="margin-top: 2px;">اسم التمرين</h3>
+        </div>
+        <button id="close-explain-modal-btn" class="timer-icon-btn">&times;</button>
+      </div>
+      
+      <div id="modal-explain-content" style="font-size: 0.92rem; color: #e2e8f0; line-height: 1.6; max-height: 380px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 14px; border-radius: var(--radius-md);">
+        <p>جاري التفكير وسؤال الكابتن الذكي...</p>
+      </div>
+
+      <button type="button" class="btn btn-secondary btn-block mt-4" id="close-explain-modal-bottom-btn">تمام، فهمت التكنيك 👍</button>
+    </div>
+  </div>
+
+  <nav id="bottom-nav" class="bottom-nav"></nav>
+
+  <script type="module">
+    import { requireAuth } from './js/auth.js';
+    import { loadExercises, getTodaysWorkout } from './js/plans.js';
+    import { saveWorkoutLog, getWorkoutLogByDate, getLastExercisePerformance } from './js/db.js';
+    import { renderNavigation, showToast, formatDateArabic, restTimer } from './js/ui.js';
+
+    let userState = null;
+    let allExercises = [];
+    let currentWorkout = null;
+    let todayDateStr = new Date().toISOString().split('T')[0];
+
+    // State tracking for exercises and sets
+    // structure: { [exerciseId]: [ { setNumber: 1, weight: '', reps: '', done: false } ] }
+    let sessionData = {};
+
+    requireAuth(async ({ user, profile }) => {
+      userState = { user, profile };
+      renderNavigation('workout', profile);
+
+      document.getElementById('session-date-display').textContent = formatDateArabic(new Date());
+
+      allExercises = await loadExercises();
+      await initWorkoutSession(profile);
+    });
+
+    async function initWorkoutSession(profile) {
+      const todayData = getTodaysWorkout(profile, allExercises);
+      
+      if (todayData.isRestDay && !window.location.search.includes('mode=optional')) {
+        document.getElementById('workout-session-name').textContent = 'اليوم راحة واستشفاء 🧘‍♂️';
+        document.getElementById('workout-session-desc').textContent = 'مفيش تمرين أساسي مجدول اليوم. استمتع بيوم راحة أو العب تمرين حر.';
+        document.getElementById('exercises-container').innerHTML = `
+          <div class="card text-center" style="padding: 30px;">
+            <p style="margin-bottom: 16px;">تحب تبدأ تمرين من جدولك على أي حال؟</p>
+            <a href="schedule.html" class="btn btn-primary">اختيار تمرين من الجدول 📅</a>
+          </div>
+        `;
+        document.getElementById('finish-workout-btn').style.display = 'none';
+        return;
+      }
+
+      currentWorkout = todayData.workout || Object.values(todayData)[0];
+      document.getElementById('workout-session-name').textContent = currentWorkout.nameAr;
+      document.getElementById('workout-session-desc').textContent = currentWorkout.descriptionAr;
+      document.getElementById('workout-day-badge').textContent = todayData.dayInfo?.nameAr || 'تمرين نشط';
+
+      // Check if there's already a saved log for today to restore
+      const savedLog = await getWorkoutLogByDate(userState.user.uid, todayDateStr);
+      
+      await renderExerciseCards(currentWorkout.exercises, savedLog);
+    }
+
+    async function renderExerciseCards(exercises, savedLog = null) {
+      const container = document.getElementById('exercises-container');
+      container.innerHTML = '';
+
+      const savedMap = {};
+      if (savedLog && savedLog.exercises) {
+        savedLog.exercises.forEach(ex => {
+          savedMap[ex.id] = ex.sets;
+        });
+      }
+
+      for (let i = 0; i < exercises.length; i++) {
+        const ex = exercises[i];
+        const numSets = ex.defaultSets || 3;
+        
+        // Fetch last session performance
+        const lastSets = await getLastExercisePerformance(userState.user.uid, ex.id);
+
+        // Initialize session sets state
+        if (savedMap[ex.id]) {
+          sessionData[ex.id] = savedMap[ex.id];
+        } else {
+          sessionData[ex.id] = [];
+          for (let s = 1; s <= numSets; s++) {
+            const prevSet = lastSets && lastSets[s - 1] ? lastSets[s - 1] : null;
+            sessionData[ex.id].push({
+              setNumber: s,
+              weight: prevSet ? prevSet.weight : '',
+              reps: prevSet ? prevSet.reps : (parseInt(ex.defaultReps, 10) || 10),
+              done: false
+            });
+          }
+        }
+
+        const card = document.createElement('div');
+        card.className = 'exercise-card';
+        card.id = `ex-card-${ex.id}`;
+
+        const setsHtml = sessionData[ex.id].map((set, setIdx) => {
+          const prevInfo = (lastSets && lastSets[setIdx]) ? `${lastSets[setIdx].weight}k×${lastSets[setIdx].reps}` : '-';
+          return `
+            <div class="set-row ${set.done ? 'completed' : ''}" id="row-${ex.id}-${set.setNumber}">
+              <div class="set-num">${set.setNumber}</div>
+              <div class="set-prev">${prevInfo}</div>
+              <div class="set-input-wrap">
+                <input type="number" step="0.5" placeholder="وزن (كجم)" value="${set.weight || ''}" id="input-w-${ex.id}-${set.setNumber}" data-ex="${ex.id}" data-set="${set.setNumber}" data-field="weight">
+              </div>
+              <div class="set-input-wrap">
+                <input type="number" placeholder="عدات" value="${set.reps || ''}" id="input-r-${ex.id}-${set.setNumber}" data-ex="${ex.id}" data-set="${set.setNumber}" data-field="reps">
+              </div>
+              <button type="button" class="set-check-btn ${set.done ? 'checked' : ''}" id="check-${ex.id}-${set.setNumber}" data-ex="${ex.id}" data-set="${set.setNumber}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </button>
+            </div>
+          `;
+        }).join('');
+
+        card.innerHTML = `
+          <div class="exercise-header">
+            <div>
+              <div class="exercise-meta-title">${i + 1}. ${ex.nameAr}</div>
+              <div class="exercise-meta-en">${ex.nameEn} • <span class="badge badge-muted">${translateMuscle(ex.muscleGroup)}</span></div>
+            </div>
+            <button type="button" class="btn-explain-ai" data-ex-id="${ex.id}" data-ex-name="${ex.nameAr}">
+              <span>✨</span>
+              <span>شرح الكابتن</span>
+            </button>
+          </div>
+
+          <!-- Instructions Accordion -->
+          <div>
+            <div class="instructions-toggle" id="toggle-inst-${ex.id}">
+              <span>📖 إزاي تلعب التمرين ده صح؟</span>
+              <span>▼</span>
+            </div>
+            <div class="instructions-content hidden" id="inst-${ex.id}">
+              ${ex.instructionsAr}
+            </div>
+          </div>
+
+          <!-- Sets Table -->
+          <div class="sets-table">
+            <div class="set-row-header">
+              <div>مجموعة</div>
+              <div>السابق</div>
+              <div>الوزن (كجم)</div>
+              <div>العدات</div>
+              <div>تم؟</div>
+            </div>
+            ${setsHtml}
+          </div>
+        `;
+
+        container.appendChild(card);
+
+        // Accordion listener
+        const toggleBtn = card.querySelector(`#toggle-inst-${ex.id}`);
+        const instBox = card.querySelector(`#inst-${ex.id}`);
+        toggleBtn.onclick = () => instBox.classList.toggle('hidden');
+
+        // AI Explainer button
+        const explainBtn = card.querySelector('.btn-explain-ai');
+        explainBtn.onclick = () => openExplainModal(ex);
+      }
+
+      // Attach event listeners for inputs & checkboxes
+      attachSetEventListeners();
+    }
+
+    function attachSetEventListeners() {
+      // Input changes
+      document.querySelectorAll('.set-input-wrap input').forEach(inp => {
+        inp.oninput = (e) => {
+          const exId = e.target.dataset.ex;
+          const setNum = parseInt(e.target.dataset.set, 10);
+          const field = e.target.dataset.field;
+          const setObj = sessionData[exId].find(s => s.setNumber === setNum);
+          if (setObj) {
+            setObj[field] = e.target.value;
+          }
+        };
+      });
+
+      // Checkbox buttons
+      document.querySelectorAll('.set-check-btn').forEach(btn => {
+        btn.onclick = (e) => {
+          const exId = btn.dataset.ex;
+          const setNum = parseInt(btn.dataset.set, 10);
+          const row = document.getElementById(`row-${exId}-${setNum}`);
+          const setObj = sessionData[exId].find(s => s.setNumber === setNum);
+
+          if (!setObj) return;
+
+          setObj.done = !setObj.done;
+
+          if (setObj.done) {
+            btn.classList.add('checked');
+            row.classList.add('completed');
+            
+            // Trigger rest timer (90s default)
+            restTimer.start(90);
+            showToast(`عاش! خلصت المجموعة ${setNum}، خد راحة 90 ثانية ⏱️`, 'success', 3000);
+          } else {
+            btn.classList.remove('checked');
+            row.classList.remove('completed');
+          }
+        };
+      });
+    }
+
+    // Translate muscle group to Arabic
+    function translateMuscle(mg) {
+      const map = {
+        chest: 'صدر',
+        back: 'ظهر',
+        shoulders: 'أكتاف',
+        biceps: 'باي سيبس',
+        triceps: 'تراي سيبس',
+        legs: 'أرجل',
+        glutes: 'جلوتس / مؤخرة',
+        core: 'بطن وكور'
+      };
+      return map[mg] || mg;
+    }
+
+    // Finish Workout Handler
+    document.getElementById('finish-workout-btn').onclick = async () => {
+      const finishBtn = document.getElementById('finish-workout-btn');
+      finishBtn.disabled = true;
+      finishBtn.textContent = 'جاري حفظ الجلسة في سجلك...';
+
+      try {
+        const loggedExercises = [];
+        let totalDoneSets = 0;
+
+        for (const [exId, sets] of Object.entries(sessionData)) {
+          const exObj = allExercises.find(e => e.id === exId);
+          loggedExercises.push({
+            id: exId,
+            nameAr: exObj ? exObj.nameAr : exId,
+            muscleGroup: exObj ? exObj.muscleGroup : '',
+            sets: sets.map(s => ({
+              setNumber: s.setNumber,
+              weight: parseFloat(s.weight) || 0,
+              reps: parseInt(s.reps, 10) || 0,
+              done: !!s.done
+            }))
+          });
+
+          totalDoneSets += sets.filter(s => s.done).length;
+        }
+
+        const workoutLogData = {
+          workoutId: currentWorkout.id,
+          workoutName: currentWorkout.nameAr,
+          exercises: loggedExercises,
+          totalDoneSets,
+          completedAt: new Date().toISOString()
+        };
+
+        await saveWorkoutLog(userState.user.uid, todayDateStr, workoutLogData);
+
+        showToast('عاش يا وحش! تم تسجيل التمرين بنجاح في سجلك الرياضي 🏆🔥', 'success', 5000);
+
+        setTimeout(() => {
+          window.location.href = 'progress.html';
+        }, 1500);
+
+      } catch (err) {
+        console.error('Error saving workout log:', err);
+        finishBtn.disabled = false;
+        finishBtn.textContent = 'إنهاء وحفظ التمرين بالكامل ✓';
+        showToast('حدث خطأ أثناء حفظ التمرين، تأكد من الاتصال', 'error');
+      }
+    };
+
+    // Exercise AI Explainer modal
+    const modal = document.getElementById('explain-modal');
+    const modalTitle = document.getElementById('modal-exercise-title');
+    const modalContent = document.getElementById('modal-explain-content');
+
+    function openExplainModal(exercise) {
+      modalTitle.textContent = `تمرين: ${exercise.nameAr} (${exercise.nameEn})`;
+      modalContent.innerHTML = `
+        <div style="margin-bottom: 12px;">
+          <strong style="color: var(--primary);">العضلة المستهدفة:</strong> ${translateMuscle(exercise.muscleGroup)}
+          <br>
+          <strong style="color: var(--secondary);">الأداة المستخدمة:</strong> ${exercise.equipment === 'gym' ? 'جيم وأجهزة' : exercise.equipment === 'dumbbells' ? 'دمبلز' : 'وزن الجسم'}
+        </div>
+        <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 12px;">
+          <strong>خطوات الأداء الصحيحة:</strong>
+          <p style="margin-top: 6px; color: #f1f5f9;">${exercise.instructionsAr}</p>
+        </div>
+        <div style="border-right: 3px solid var(--accent-amber); padding-right: 10px; margin-top: 10px;">
+          <strong style="color: var(--accent-amber);">نصيحة أمان ذهبية من الكابتن:</strong>
+          <p style="font-size: 0.88rem; color: #cbd5e1; margin-top: 4px;">
+            حافظ على استقامة العمود الفقري وتنفسك (زفير مع المجهود وشهيق مع النزول). متقفش مفاصلك للآخر في قمة الحركة.
+          </p>
+        </div>
+      `;
+      modal.classList.remove('hidden');
+    }
+
+    document.getElementById('close-explain-modal-btn').onclick = () => modal.classList.add('hidden');
+    document.getElementById('close-explain-modal-bottom-btn').onclick = () => modal.classList.add('hidden');
+  </script>
+</body>
+</html>

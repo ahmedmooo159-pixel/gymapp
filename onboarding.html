@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>وحش الجيم | تجهيز خطتك الشخصية</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .step-indicator {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .step-indicator::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--border-subtle);
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+    .step-item {
+      position: relative;
+      z-index: 2;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-surface);
+      border: 2px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+    .step-item.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #042217;
+      box-shadow: 0 0 12px var(--primary-glow);
+    }
+    .step-item.completed {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      color: #fff;
+    }
+  </style>
+</head>
+<body class="no-nav">
+  <div class="app-container" style="max-width: 520px; min-height: 100vh; justify-content: center;">
+    
+    <div class="card">
+      <div class="text-center mb-4">
+        <h1 style="font-size: 1.5rem; margin-bottom: 4px;">تجهيز خطتك الرياضية 🎯</h1>
+        <p id="step-subtitle">جاوب على شوية أسئلة بسيطة عشان نظبطلك التمرين والتغذية بالمللي</p>
+      </div>
+
+      <!-- Step Indicator (3 Steps) -->
+      <div class="step-indicator">
+        <div class="step-item active" id="dot-1">1</div>
+        <div class="step-item" id="dot-2">2</div>
+        <div class="step-item" id="dot-3">3</div>
+      </div>
+
+      <form id="onboarding-form">
+        <!-- ================= STEP 1: Basic Body Info ================= -->
+        <div class="step-panel" id="step-1">
+          <h2 style="font-size: 1.15rem; margin-bottom: 14px;">1. بياناتك الأساسية</h2>
+          
+          <div class="form-group">
+            <label class="form-label">النوع</label>
+            <div class="choice-grid" style="grid-template-columns: 1fr 1fr;">
+              <label class="choice-card">
+                <input type="radio" name="gender" value="male" checked>
+                <div class="choice-card-icon">👨</div>
+                <div class="choice-card-title">شاب / رجل</div>
+              </label>
+              <label class="choice-card">
+                <input type="radio" name="gender" value="female">
+                <div class="choice-card-icon">👩</div>
+                <div class="choice-card-title">بنت / سيدة</div>
+              </label>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label" for="age">السن (بالسنوات)</label>
+              <input type="number" id="age" name="age" class="form-input" placeholder="مثال: 24" min="14" max="99" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="height">الطول (سم)</label>
+              <input type="number" id="height" name="height" class="form-input" placeholder="مثال: 175" min="120" max="230" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="weight">الوزن الحالي (كجم)</label>
+            <input type="number" id="weight" name="weight" step="0.5" class="form-input" placeholder="مثال: 78.5" min="35" max="250" required>
+            <span class="form-hint">هنستخدم وزنك لحساب احتياج البروتين والسعرات بدقة.</span>
+          </div>
+
+          <div id="step-1-error" class="form-error hidden mb-2"></div>
+
+          <button type="button" class="btn btn-primary btn-block mt-2" id="next-btn-1">
+            <span>التالي: اختيار الهدف ومستوى النشاط</span>
+            <span>←</span>
+          </button>
+        </div>
+
+        <!-- ================= STEP 2: Goal & Activity Level ================= -->
+        <div class="step-panel hidden" id="step-2">
+          <h2 style="font-size: 1.15rem; margin-bottom: 14px;">2. هدفك ومستوى نشاطك اليومي</h2>
+
+          <div class="form-group">
+            <label class="form-label">إيه هدفك الرئيسي حالياً؟</label>
+            <div class="choice-grid" style="grid-template-columns: 1fr;">
+              <label class="choice-card">
+                <input type="radio" name="goal" value="cut" checked>
+                <div style="display: flex; align-items: center; gap: 12px; text-align: right;">
+                  <div style="font-size: 1.8rem;">🔥</div>
+                  <div>
+                    <div class="choice-card-title">تنشيف وحرق دهون (Cut)</div>
+                    <div class="choice-card-desc">عجز سعرات مع الحفاظ على الكتلة العضلية</div>
+                  </div>
+                </div>
+              </label>
+
+              <label class="choice-card">
+                <input type="radio" name="goal" value="bulk">
+                <div style="display: flex; align-items: center; gap: 12px; text-align: right;">
+                  <div style="font-size: 1.8rem;">💪</div>
+                  <div>
+                    <div class="choice-card-title">تضخيم وبناء عضلات (Bulk)</div>
+                    <div class="choice-card-desc">فائض سعرات خفيف لبناء حجم وقوة عضلية</div>
+                  </div>
+                </div>
+              </label>
+
+              <label class="choice-card">
+                <input type="radio" name="goal" value="maintain">
+                <div style="display: flex; align-items: center; gap: 12px; text-align: right;">
+                  <div style="font-size: 1.8rem;">⚖️</div>
+                  <div>
+                    <div class="choice-card-title">ثبات وزن وتحسين اللياقة (Maintain)</div>
+                    <div class="choice-card-desc">تناول سعرات الثبات مع تحسين تكوين الجسم</div>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="activityLevel">مستوى نشاطك اليومي (خارج الجيم)</label>
+            <select id="activityLevel" name="activityLevel" class="form-select">
+              <option value="sedentary">خامل (عمل مكتبي، حركة قليلة جداً)</option>
+              <option value="light">نشاط خفيف (مشي بسيط أو حركة عادية يومياً)</option>
+              <option value="moderate" selected>نشاط متوسط (حركة منتظمة خلال اليوم)</option>
+              <option value="high">نشاط عالي (عمل بدني شاق أو حركة مستمرة)</option>
+            </select>
+          </div>
+
+          <div style="display: flex; gap: 10px;" class="mt-4">
+            <button type="button" class="btn btn-secondary" id="prev-btn-2">السابق</button>
+            <button type="button" class="btn btn-primary" style="flex: 1;" id="next-btn-2">
+              <span>التالي: جدول التمرين والأدوات</span>
+              <span>←</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ================= STEP 3: Training Days & Equipment ================= -->
+        <div class="step-panel hidden" id="step-3">
+          <h2 style="font-size: 1.15rem; margin-bottom: 14px;">3. أيام التمرين والأدوات المتاحة</h2>
+
+          <div class="form-group">
+            <label class="form-label">تقدر تتمرن كام يوم في الأسبوع؟</label>
+            <div class="choice-grid" style="grid-template-columns: repeat(4, 1fr);">
+              <label class="choice-card">
+                <input type="radio" name="trainingDays" value="3" checked>
+                <div class="choice-card-title" style="font-size: 1.1rem;">3 أيام</div>
+                <div class="choice-card-desc">فول بودي</div>
+              </label>
+              <label class="choice-card">
+                <input type="radio" name="trainingDays" value="4">
+                <div class="choice-card-title" style="font-size: 1.1rem;">4 أيام</div>
+                <div class="choice-card-desc">علوي / سفلي</div>
+              </label>
+              <label class="choice-card">
+                <input type="radio" name="trainingDays" value="5">
+                <div class="choice-card-title" style="font-size: 1.1rem;">5 أيام</div>
+                <div class="choice-card-desc">Push/Pull/Legs</div>
+              </label>
+              <label class="choice-card">
+                <input type="radio" name="trainingDays" value="6">
+                <div class="choice-card-title" style="font-size: 1.1rem;">6 أيام</div>
+                <div class="choice-card-desc">PPL متقدم</div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">المكان والأدوات اللي هتتمرن بيها</label>
+            <div class="choice-grid" style="grid-template-columns: 1fr;">
+              <label class="choice-card">
+                <input type="radio" name="equipment" value="gym" checked>
+                <div style="display: flex; align-items: center; gap: 12px; text-align: right;">
+                  <div style="font-size: 1.8rem;">🏋️‍♂️</div>
+                  <div>
+                    <div class="choice-card-title">جيم متكامل (Full Gym)</div>
+                    <div class="choice-card-desc">أجهزة، كوابل، بارات، ودمبلز متنوعة</div>
+                  </div>
+                </div>
+              </label>
+
+              <label class="choice-card">
+                <input type="radio" name="equipment" value="dumbbells">
+                <div style="display: flex; align-items: center; gap: 12px; text-align: right;">
+                  <div style="font-size: 1.8rem;">🥊</div>
+                  <div>
+                    <div class="choice-card-title">دمبلز فقط بالبيت (Dumbbells Only)</div>
+                    <div class="choice-card-desc">تمارين منزلية مخصصة للدمبلز ودكة بسيطة</div>
+                  </div>
+                </div>
+              </label>
+
+              <label class="choice-card">
+                <input type="radio" name="equipment" value="bodyweight">
+                <div style="display: flex; align-items: center; gap: 12px; text-align: right;">
+                  <div style="font-size: 1.8rem;">🤸</div>
+                  <div>
+                    <div class="choice-card-title">وزن الجسم فقط (Bodyweight)</div>
+                    <div class="choice-card-desc">تمارين كاليستنكس وضغط وعقلة بدون أوزان</div>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div id="step-3-error" class="form-error hidden mb-2"></div>
+
+          <div style="display: flex; gap: 10px;" class="mt-4">
+            <button type="button" class="btn btn-secondary" id="prev-btn-3">السابق</button>
+            <button type="submit" class="btn btn-primary" style="flex: 1;" id="save-plan-btn">
+              <span>حفظ وإنشاء الخطة الآن 🚀</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { requireAuth } from './js/auth.js';
+    import { calculateAllTargets } from './js/calc.js';
+    import { saveUserProfile, saveWeightRecord, getUserProfile } from './js/db.js';
+    import { showToast } from './js/ui.js';
+
+    let currentUser = null;
+
+    // Check auth with allowIncompleteProfile = true
+    requireAuth(async ({ user, profile }) => {
+      currentUser = user;
+      
+      // If editing existing profile, prefill form
+      if (profile) {
+        document.getElementById('step-subtitle').textContent = 'عدل بياناتك وهيتم إعادة حساب خطتك وجدولك تلقائياً';
+        if (profile.gender) {
+          const r = document.querySelector(`input[name="gender"][value="${profile.gender}"]`);
+          if (r) r.checked = true;
+        }
+        if (profile.age) document.getElementById('age').value = profile.age;
+        if (profile.height) document.getElementById('height').value = profile.height;
+        if (profile.weight) document.getElementById('weight').value = profile.weight;
+        if (profile.goal) {
+          const r = document.querySelector(`input[name="goal"][value="${profile.goal}"]`);
+          if (r) r.checked = true;
+        }
+        if (profile.activityLevel) document.getElementById('activityLevel').value = profile.activityLevel;
+        if (profile.trainingDays) {
+          const r = document.querySelector(`input[name="trainingDays"][value="${profile.trainingDays}"]`);
+          if (r) r.checked = true;
+        }
+        if (profile.equipment) {
+          const r = document.querySelector(`input[name="equipment"][value="${profile.equipment}"]`);
+          if (r) r.checked = true;
+        }
+      }
+    }, { allowIncompleteProfile: true });
+
+    // Step switching logic
+    function setStep(stepNum) {
+      document.querySelectorAll('.step-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`step-${stepNum}`).classList.remove('hidden');
+
+      for (let i = 1; i <= 3; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        dot.classList.remove('active', 'completed');
+        if (i < stepNum) dot.classList.add('completed');
+        if (i === stepNum) dot.classList.add('active');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Validation Step 1
+    document.getElementById('next-btn-1').addEventListener('click', () => {
+      const age = parseInt(document.getElementById('age').value, 10);
+      const height = parseFloat(document.getElementById('height').value);
+      const weight = parseFloat(document.getElementById('weight').value);
+      const errEl = document.getElementById('step-1-error');
+
+      if (!age || age < 14 || age > 99) {
+        errEl.textContent = 'يرجى كتابة سن صحيح بين 14 و 99 سنة.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      if (!height || height < 120 || height > 230) {
+        errEl.textContent = 'يرجى كتابة طول صحيح بالسم (بين 120 و 230 سم).';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      if (!weight || weight < 35 || weight > 250) {
+        errEl.textContent = 'يرجى كتابة وزن صحيح بالكجم (بين 35 و 250 كجم).';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      errEl.classList.add('hidden');
+      setStep(2);
+    });
+
+    document.getElementById('prev-btn-2').addEventListener('click', () => setStep(1));
+    document.getElementById('next-btn-2').addEventListener('click', () => setStep(3));
+    document.getElementById('prev-btn-3').addEventListener('click', () => setStep(2));
+
+    // Submit form
+    document.getElementById('onboarding-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const saveBtn = document.getElementById('save-plan-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'جاري حفظ خطتك الذكية...';
+
+      try {
+        const gender = document.querySelector('input[name="gender"]:checked').value;
+        const age = parseInt(document.getElementById('age').value, 10);
+        const height = parseFloat(document.getElementById('height').value);
+        const weight = parseFloat(document.getElementById('weight').value);
+        const goal = document.querySelector('input[name="goal"]:checked').value;
+        const activityLevel = document.getElementById('activityLevel').value;
+        const trainingDays = parseInt(document.querySelector('input[name="trainingDays"]:checked').value, 10);
+        const equipment = document.querySelector('input[name="equipment"]:checked').value;
+
+        // Calculate targets
+        const calculated = calculateAllTargets({
+          gender,
+          weight,
+          height,
+          age,
+          activityLevel,
+          goal
+        });
+
+        const profileData = {
+          name: currentUser.displayName || 'بطل الجيم',
+          email: currentUser.email || '',
+          gender,
+          age,
+          height,
+          weight,
+          goal,
+          activityLevel,
+          trainingDays,
+          equipment,
+          ...calculated
+        };
+
+        // Save profile
+        await saveUserProfile(currentUser.uid, profileData);
+
+        // Record initial weight entry
+        const todayStr = new Date().toISOString().split('T')[0];
+        await saveWeightRecord(currentUser.uid, todayStr, weight);
+
+        showToast('تم إعداد خطتك بنجاح! عاش يا بطل 💪', 'success');
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 1200);
+
+      } catch (err) {
+        console.error('Error saving onboarding data:', err);
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'حفظ وإنشاء الخطة الآن 🚀';
+        document.getElementById('step-3-error').textContent = 'حدث خطأ أثناء حفظ البيانات، يرجى المحاولة مرة أخرى.';
+        document.getElementById('step-3-error').classList.remove('hidden');
+        showToast('تعذر الحفظ، تأكد من اتصال الإنترنت', 'error');
+      }
+    });
+  </script>
+</body>
+</html>

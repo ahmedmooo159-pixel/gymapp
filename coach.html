@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>وحش الجيم | اسأل الكابتن الذكي (AI Coach)</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .quick-chips {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 6px 0 12px 0;
+      scrollbar-width: none;
+    }
+    .quick-chips::-webkit-scrollbar { display: none; }
+    .chip-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: var(--font-main);
+    }
+    .chip-btn:hover {
+      border-color: var(--accent-purple);
+      color: #fff;
+    }
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding: 4px 8px;
+    }
+    .typing-dots span {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-purple);
+      border-radius: 50%;
+      animation: pulse 1s infinite alternate;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+  </style>
+</head>
+<body>
+  <header id="app-header" class="app-header"></header>
+
+  <main class="app-container">
+    
+    <!-- Coach Header Info -->
+    <div class="card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(6, 182, 212, 0.08) 100%); border-color: rgba(139, 92, 246, 0.3); padding: 14px 16px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #8b5cf6, #06b6d4); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+          🤖
+        </div>
+        <div>
+          <h1 style="font-size: 1.15rem; color: #fff;">كابتن AI (مدربك الشخصي)</h1>
+          <span style="font-size: 0.78rem; color: #c084fc;">متخصص في مساعدة وتوجيه المبتدئين بالمصري 🇪🇬</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Messages Box -->
+    <div class="card chat-container">
+      <div id="chat-messages" class="chat-messages">
+        
+        <!-- Welcome Coach Message -->
+        <div class="chat-bubble chat-coach">
+          <div style="font-weight: 800; font-size: 0.82rem; color: #c084fc; margin-bottom: 2px;">كابتن وحش الجيم ⚡</div>
+          يا هلا يا بطل! أنا كابتن الجيم الذكي الخاص بيك.
+          <br>
+          اسألني عن أي حاجة: شرح تمرين، إزاي تظبط نفسك، تتنفس إزاي، تختار أوزانك إزاي، أو تظبط أكلك. أنا معاك خطوة بخطوة 💪
+        </div>
+
+      </div>
+
+      <!-- Quick Suggestion Chips -->
+      <div class="quick-chips">
+        <button class="chip-btn" data-q="إزاي أظبط تنفسي في التمارين؟">🫁 إزاي أتنفس صح في التمرين؟</button>
+        <button class="chip-btn" data-q="إزاي أعرف الوزن المناسب للمبتدئ؟">⚖️ أختار وزني إزاي في البداية؟</button>
+        <button class="chip-btn" data-q="أعمل إيه لو جالي وجع وتكسير في عضلاتي تاني يوم؟">🔥 وجع العضلات تاني يوم تمرين؟</button>
+        <button class="chip-btn" data-q="أشرب ماية إزاي خلال جلسة التمرين؟">💧 شرب الماية أثناء التمرين؟</button>
+      </div>
+
+      <!-- Input Row -->
+      <form id="chat-form" class="chat-input-row">
+        <input type="text" id="chat-input" class="form-input" placeholder="اسأل الكابتن أي سؤال في الجيم..." autocomplete="off" required>
+        <button type="submit" id="chat-send-btn" class="btn btn-primary" style="padding: 0 18px;">
+          <span>إرسال</span>
+          <span>🚀</span>
+        </button>
+      </form>
+    </div>
+
+  </main>
+
+  <nav id="bottom-nav" class="bottom-nav"></nav>
+
+  <script type="module">
+    import { requireAuth } from './js/auth.js';
+    import { renderNavigation, showToast } from './js/ui.js';
+    import { app } from './js/firebase-config.js';
+
+    let userState = null;
+    let chatHistory = [];
+    let vertexModel = null;
+
+    // Initialize Firebase Vertex AI / Gen AI safely if available
+    async function initAIModel() {
+      try {
+        const { getVertexAI, getGenerativeModel } = await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-vertexai.js");
+        const vertexAI = getVertexAI(app);
+        vertexModel = getGenerativeModel(vertexAI, {
+          model: "gemini-1.5-flash",
+          systemInstruction: {
+            role: "system",
+            parts: [{
+              text: `أنت كابتن جيم مصري ودود وخبير وصبور جداً مع المبتدئين اسمك "كابتن وحش الجيم".
+إرشاداتك الصارمة:
+1. اتكلم بالمصري البسيط والشعبي الراقي والمشجع (يا بطل، عاش، تمام يا وحش).
+2. اجعل إجاباتك قصيرة ومباشرة ونقاط واضحة وسهلة الفهم للمبتدئ تماماً.
+3. ركز دائماً على الأداء والتكنيك الصحيح والأمان قبل رفع الأوزان الثقيلة.
+4. ممنوع منعاً باتاً إعطاء أي نصيحة طبية أو تشخيص إصابة أو وصف أدوية. إذا ذكر المستخدم ألماً حاداً أو اشتباه إصابة، وجهه بلطف وحزم لاستشارة طبيب عظام أو أخصائي علاج طبيعي فوراً.`
+            }]
+          }
+        });
+      } catch (err) {
+        console.warn("Firebase Vertex AI not active or restricted, fallback smart knowledge coach activated:", err);
+      }
+    }
+
+    requireAuth(async ({ user, profile }) => {
+      userState = { user, profile };
+      renderNavigation('coach', profile);
+      await initAIModel();
+    });
+
+    const messagesBox = document.getElementById('chat-messages');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('chat-send-btn');
+
+    // Quick chips listener
+    document.querySelectorAll('.chip-btn').forEach(chip => {
+      chip.onclick = () => {
+        chatInput.value = chip.dataset.q;
+        chatForm.dispatchEvent(new Event('submit'));
+      };
+    });
+
+    // Chat submit
+    chatForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      chatInput.value = '';
+      appendMessage('user', text);
+
+      // Typing indicator
+      const typingEl = document.createElement('div');
+      typingEl.className = 'chat-bubble chat-coach';
+      typingEl.id = 'typing-indicator';
+      typingEl.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div>`;
+      messagesBox.appendChild(typingEl);
+      messagesBox.scrollTop = messagesBox.scrollHeight;
+
+      sendBtn.disabled = true;
+
+      try {
+        let reply = '';
+        if (vertexModel) {
+          const result = await vertexModel.generateContent(text);
+          reply = result.response.text();
+        } else {
+          // Smart local fallback coach
+          reply = getFallbackCoachResponse(text, userState?.profile);
+        }
+
+        typingEl.remove();
+        appendMessage('coach', reply);
+
+      } catch (err) {
+        console.error("AI Error:", err);
+        typingEl.remove();
+        // Fallback message with genuine friendly advice
+        const fallbackReply = getFallbackCoachResponse(text, userState?.profile);
+        appendMessage('coach', fallbackReply);
+      } finally {
+        sendBtn.disabled = false;
+        chatInput.focus();
+      }
+    };
+
+    function appendMessage(sender, text) {
+      const bubble = document.createElement('div');
+      bubble.className = `chat-bubble ${sender === 'user' ? 'chat-user' : 'chat-coach'}`;
+      
+      if (sender === 'coach') {
+        bubble.innerHTML = `
+          <div style="font-weight: 800; font-size: 0.82rem; color: #c084fc; margin-bottom: 2px;">كابتن وحش الجيم ⚡</div>
+          <div>${formatReply(text)}</div>
+        `;
+      } else {
+        bubble.textContent = text;
+      }
+
+      messagesBox.appendChild(bubble);
+      messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
+
+    function formatReply(text) {
+      // Basic markdown formatting for bullets & bold
+      return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+    }
+
+    // Knowledge base for fallback responses when AI quota/network is offline
+    function getFallbackCoachResponse(query, profile) {
+      const q = query.toLowerCase();
+
+      if (q.includes('ألم') || q.includes('وجع') || q.includes('اصابة') || q.includes('إصابة') || q.includes('مفصل')) {
+        return "سلامتك يا بطل! لو الوجع ده في المفاصل أو حاد ومفاجئ، وقف التمرين فوراً وريح العضلة. وممنوع تتمرن على وجع مفصل، واستشر دكتور أو أخصائي علاج طبيعي للتأكد من سلامتك. صحتك ومفاصلك أهم من أي وزن! 💪";
+      }
+
+      if (q.includes('تنفس') || q.includes('نفس')) {
+        return "قاعدة التنفس الذهبية في الجيم يا بطل بسيطة جداً:\n1. **الزفير (طلع نفسك)**: مع المجهود وأنت بتدفع أو ترفع الوزن لفوق.\n2. **الشهيق (خد نفس)**: وأنت نازل بالوزن بالراحة وبتحكم.\nماتكتمش نفسك أبداً عشان ضغط دمك يفضل مظبوط.";
+      }
+
+      if (q.includes('وزن') || q.includes('أوزان') || q.includes('اوزان')) {
+        return "في أول شهرين، اختار وزن تقدر تلعب بيه من 8 لـ 12 عدة بتكنيك سليم 100% ومن غير مرجحة. آخر عدتين لازم يكونوا صعبين بس بتكنيك مظبوط. لو التكنيك باظ يبقى الوزن تقيل عليك!";
+      }
+
+      if (q.includes('ماية') || q.includes('مياه') || q.includes('عطش')) {
+        return "اشرب رشفات بسيطة من الماية بين المجموعات كل 10-15 دقيقة (حوالي 500 مل خلال التمرين ككل)، واشرب من 3 لـ 4 لتر ماء على مدار اليوم كله عشان تضمن أعلى طاقة واستشفاء عضلات.";
+      }
+
+      if (q.includes('تكسير') || q.includes('عضلاتي') || q.includes('تاني يوم') || q.includes('شد')) {
+        return "ده اسمه (DOMS) أو وجع الاستشفاء العضلي الطبيعي بعد تمرين جديد! علاجه:\n1. اشرب ماية كويسة.\n2. نام 7-8 ساعات بالليل.\n3. خد احتياجك الكامل من البروتين.\n4. مشي خفيف لتنشيط الدورة الدموية.";
+      }
+
+      return "يا بطل، أهم نصيحة ليك كمبتدئ:\n- التزم بجدولك وبتكنيك التمرين الصح.\n- ركز على أكلك والنوم 8 ساعات.\n- الأوزان هتزيد بالتدريج الطبيعي واحدة واحدة. استمر وعاش يا وحش! 💪";
+    }
+  </script>
+</body>
+</html>

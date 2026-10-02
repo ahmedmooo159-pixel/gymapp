@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>وحش الجيم | جدول التمارين الأسبوعي</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="app-header" class="app-header"></header>
+
+  <main class="app-container">
+    
+    <!-- Schedule Header -->
+    <div class="card" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.12) 0%, rgba(17, 24, 39, 0.95) 100%); border-color: rgba(6, 182, 212, 0.3);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+        <h1 style="font-size: 1.45rem;">جدولك الأسبوعي 📅</h1>
+        <span class="badge badge-cyan" id="schedule-days-badge">...</span>
+      </div>
+      <p style="font-size: 0.88rem; color: #cbd5e1;">
+        موزع بأفضل طريقة استشفاء علمية لتفادي الإجهاد العضلي وتحقيق أقصى بناء.
+      </p>
+    </div>
+
+    <!-- 7 Days List Container -->
+    <div id="schedule-list-container" class="schedule-list">
+      <div class="card text-center" style="padding: 30px;">
+        <p>جاري تجهيز جدول الأسبوع...</p>
+      </div>
+    </div>
+
+  </main>
+
+  <nav id="bottom-nav" class="bottom-nav"></nav>
+
+  <script type="module">
+    import { requireAuth } from './js/auth.js';
+    import { loadExercises, getFullWeeklySchedule } from './js/plans.js';
+    import { renderNavigation } from './js/ui.js';
+
+    requireAuth(async ({ user, profile }) => {
+      renderNavigation('schedule', profile);
+
+      const daysCount = profile.trainingDays || 3;
+      document.getElementById('schedule-days-badge').textContent = `${daysCount} أيام تمرين / أسبوع`;
+
+      const allExercises = await loadExercises();
+      const weeklySchedule = getFullWeeklySchedule(profile, allExercises);
+      
+      renderScheduleList(weeklySchedule);
+    });
+
+    function renderScheduleList(weeklySchedule) {
+      const container = document.getElementById('schedule-list-container');
+      container.innerHTML = '';
+
+      const currentDayIndex = new Date().getDay();
+
+      weeklySchedule.forEach(day => {
+        const isToday = day.index === currentDayIndex;
+        const card = document.createElement('div');
+        card.className = `card ${isToday ? 'today' : ''}`;
+        card.style.padding = '14px 16px';
+        if (isToday) {
+          card.style.border = '1.5px solid var(--primary)';
+          card.style.boxShadow = '0 0 16px rgba(16, 185, 129, 0.2)';
+        }
+
+        if (day.isRestDay) {
+          card.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div class="day-badge-col">
+                <div class="day-circle" style="${isToday ? 'background: var(--primary); color: #042217;' : ''}">
+                  ${day.shortAr}
+                </div>
+                <div>
+                  <div style="font-weight: 800; font-size: 1.05rem; color: #fff;">
+                    ${day.nameAr} ${isToday ? '<span class="badge badge-primary" style="margin-right: 6px;">اليوم ⭐</span>' : ''}
+                  </div>
+                  <span style="font-size: 0.82rem; color: var(--secondary);">راحة واستشفاء عضلات 🧘‍♂️</span>
+                </div>
+              </div>
+              <span class="badge badge-muted">Rest Day</span>
+            </div>
+          `;
+        } else {
+          const workout = day.workout;
+          card.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+              <div class="day-badge-col">
+                <div class="day-circle" style="${isToday ? 'background: var(--primary); color: #042217;' : ''}">
+                  ${day.shortAr}
+                </div>
+                <div>
+                  <div style="font-weight: 800; font-size: 1.05rem; color: #fff;">
+                    ${day.nameAr} ${isToday ? '<span class="badge badge-primary" style="margin-right: 6px;">اليوم ⭐</span>' : ''}
+                  </div>
+                  <span style="font-size: 0.85rem; font-weight: 700; color: var(--primary);">${workout.nameAr}</span>
+                </div>
+              </div>
+              <span class="badge badge-primary">${workout.exercises.length} تمارين</span>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0;">
+              ${workout.targetMuscles.map(m => `<span class="badge badge-muted" style="font-size: 0.72rem;">${m}</span>`).join('')}
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 4px; background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: var(--radius-sm); margin-top: 8px;">
+              ${workout.exercises.map((ex, i) => `
+                <div style="font-size: 0.8rem; color: #cbd5e1; display: flex; justify-content: space-between;">
+                  <span>${i + 1}. ${ex.nameAr}</span>
+                  <span style="color: var(--text-muted); direction: ltr;">${ex.defaultSets} × ${ex.defaultReps}</span>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+
+        container.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>
